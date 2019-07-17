@@ -14,7 +14,7 @@ const mainElement = document.createElement('div');
 document.body.appendChild(mainElement);
 
 // Title
-document.title = 'Data Visualizer';
+document.title = 'Cooling Oven';
 
 // Render components
 const render = (Component: () => JSX.Element) => {

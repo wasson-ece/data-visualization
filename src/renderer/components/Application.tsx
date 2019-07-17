@@ -1,8 +1,8 @@
 import { hot } from 'react-hot-loader/root';
 import * as React from 'react';
 
-import CounterContainer from '../containers/CounterContainer';
+import DataVisualizationContainer from '../containers/DataVisualizationContainer';
 
-const Application = () => <CounterContainer />;
+const Application = () => <DataVisualizationContainer />;
 
 export default hot(Application);

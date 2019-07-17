@@ -20,7 +20,7 @@ const createWindow = async () => {
     }
 
     win = new BrowserWindow({ width: 800, height: 600 });
-    win.setTitle('Data Visualizer');
+    win.setTitle('Cooling Oven');
 
     if (process.env.NODE_ENV !== 'production') {
         process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = '1';
