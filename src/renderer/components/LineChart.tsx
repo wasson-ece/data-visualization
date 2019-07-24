@@ -6,6 +6,7 @@ import {
     YAxis,
     HorizontalGridLines,
     LineSeriesCanvas,
+    LineSeries,
     Highlight
     // @ts-ignore
 } from 'react-vis';
@@ -16,6 +17,7 @@ require('react-vis/dist/style.css');
 interface LineChartProps {
     data: Point[];
     classes: any;
+    height?: number;
 }
 
 interface LineChartState {
@@ -36,8 +38,10 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
         this.state = {};
     }
 
+    DEFAULT_HEIGHT = 300;
+
     render() {
-        const { data, classes } = this.props;
+        const { data, classes, height } = this.props;
         const { drawBounds, area } = this.state;
 
         return (
@@ -46,12 +50,12 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
                     animation
                     xDomain={drawBounds && [drawBounds.left, drawBounds.right]}
                     yDomain={drawBounds && [drawBounds.bottom, drawBounds.top]}
-                    height={300}
+                    height={height || this.DEFAULT_HEIGHT}
                 >
                     <HorizontalGridLines />
                     <YAxis />
                     <XAxis />
-                    <LineSeriesCanvas data={data} />
+                    <LineSeries data={data} />
                     <Highlight
                         onBrushEnd={(nextDrawBounds: DrawBounds) => {
                             this.setState({ drawBounds: nextDrawBounds });

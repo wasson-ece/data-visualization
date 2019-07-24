@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import Counter from '../components/Counter';
+import Counter from '../components/ChartContainer';
 import { RootState } from '../reducers';
 import { CounterAction, decrement, increment } from '../actions/counterActions';
 
