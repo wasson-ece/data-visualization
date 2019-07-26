@@ -55,7 +55,7 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
                     <HorizontalGridLines />
                     <YAxis />
                     <XAxis />
-                    <LineSeries data={data} />
+                    <LineSeriesCanvas data={data} />
                     <Highlight
                         onBrushEnd={(nextDrawBounds: DrawBounds) => {
                             this.setState({ drawBounds: nextDrawBounds });
@@ -84,20 +84,9 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
 
 const styles = (theme: Theme) => ({
     root: {
-        height: '100%',
-        padding: 16,
-        display: 'grid'
+        width: '100%'
     },
-    tableRoot: {
-        marginTop: theme.spacing(3),
-        overflowX: 'auto' as 'auto',
-        width: 650,
-        margin: '0 auto'
-    },
-    table: {},
-    title: {
-        margin: 16
-    }
+    title: {}
 });
 
 export default withStyles(styles)(LineChart);

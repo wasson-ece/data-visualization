@@ -1,4 +1,4 @@
-export default class Detector {
+export default abstract class Detector {
     id: string;
     reading: number;
     pollRate: number;

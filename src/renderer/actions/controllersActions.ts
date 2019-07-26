@@ -1,55 +1,95 @@
 import { Action, ActionCreator } from 'redux';
-import Controller from '../../ti-components/controllers/Controller';
 import ControllerType from '../../enums/ControllerType';
+import Controller from '../../types/Controller';
+import { Point } from 'electron';
 
 export interface AddController extends Action {
     type: 'ADD_CONTROLLER';
-    detectorType: ControllerType;
-    detector: Controller;
+    controllerType: ControllerType;
+    controller: Controller;
+}
+
+export interface SetControllers extends Action {
+    type: 'SET_CONTROLLERS';
+    controllerType: ControllerType;
+    controllers: Controller[];
+}
+
+export interface UpdateControllers extends Action {
+    type: 'UPDATE_CONTROLLERS';
+    controllerType: ControllerType;
+    controllers: Controller[];
+}
+
+export interface AddHeaterDatum extends Action {
+    type: 'ADD_HEATER_DATUM';
+    id: string;
+    datum: Point;
 }
 
 export interface RemoveController extends Action {
     type: 'REMOVE_CONTROLLER';
-    detectorType: ControllerType;
+    controllerType: ControllerType;
     id: string;
 }
 
 export interface SetControllerAttribute extends Action {
     type: 'SET_CONTROLLER_ATTRIBUTE';
-    detectorType: ControllerType;
+    controllerType: ControllerType;
     attribute: string;
     value: any;
 }
 
 export const addController: ActionCreator<AddController> = (
-    detectorType: ControllerType,
-    detector: Controller
+    controllerType: ControllerType,
+    controller: Controller
 ) => ({
     type: 'ADD_CONTROLLER',
-    detectorType,
-    detector
+    controllerType,
+    controller
+});
+
+export const updateControllers: ActionCreator<UpdateControllers> = (
+    controllerType: ControllerType,
+    controllers: Controller[]
+) => ({
+    type: 'UPDATE_CONTROLLERS',
+    controllerType,
+    controllers
+});
+
+export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum: Point) => ({
+    type: 'ADD_HEATER_DATUM',
+    id,
+    datum
 });
 
 export const setControllerAttribute: ActionCreator<RemoveController> = (
-    detectorType: ControllerType,
+    controllerType: ControllerType,
     id: string,
     attribute: string,
     value
 ) => ({
     type: 'REMOVE_CONTROLLER',
-    detectorType,
+    controllerType,
     attribute,
     value,
     id
 });
 
 export const removeController: ActionCreator<RemoveController> = (
-    detectorType: ControllerType,
+    controllerType: ControllerType,
     id: string
 ) => ({
     type: 'REMOVE_CONTROLLER',
-    detectorType,
+    controllerType,
     id
 });
 
-export type ControllersAction = AddController | RemoveController | SetControllerAttribute;
+export type ControllersAction =
+    | AddController
+    | RemoveController
+    | SetControllerAttribute
+    | UpdateControllers
+    | SetControllers
+    | AddHeaterDatum;

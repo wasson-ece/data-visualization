@@ -2,22 +2,21 @@ import * as React from 'react';
 import { withStyles, Theme, TextField, Button, InputAdornment } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
 
-interface SetpointControlProps {
+interface ParameterControlProps {
     classes: any;
     title: string;
-    actual: number;
-    isDirty: boolean;
+    current: number;
     units: string;
     onChangeSetpoint: (setpoint: number) => void;
 }
 
-interface SetpointControlState {
+interface ParameterControlState {
     isDirty: boolean;
     newSetpointValue: string;
 }
 
-class SetpointControl extends React.Component<SetpointControlProps, SetpointControlState> {
-    constructor(props: SetpointControlProps) {
+class ParameterControl extends React.Component<ParameterControlProps, ParameterControlState> {
+    constructor(props: ParameterControlProps) {
         super(props);
         this.state = { isDirty: false, newSetpointValue: '' };
     }
@@ -36,7 +35,7 @@ class SetpointControl extends React.Component<SetpointControlProps, SetpointCont
     };
 
     render() {
-        const { classes, title, actual, units, onChangeSetpoint } = this.props;
+        const { classes, title, current, units, onChangeSetpoint } = this.props;
         const { isDirty, newSetpointValue } = this.state;
 
         return (
@@ -46,10 +45,17 @@ class SetpointControl extends React.Component<SetpointControlProps, SetpointCont
                     InputLabelProps={{
                         shrink: true
                     }}
-                    inputProps={{ style: { fontSize: 32 } }}
                     type="number"
-                    value={isDirty ? newSetpointValue : actual}
+                    value={isDirty ? newSetpointValue : current}
                     InputProps={{
+                        inputProps: {
+                            min: -273.15,
+                            max: 500,
+                            step: 0.01,
+                            style: {
+                                fontSize: 48
+                            }
+                        },
                         endAdornment: (
                             <InputAdornment position="start" className={classes.adornment}>
                                 <div>{units}</div>
@@ -77,7 +83,7 @@ class SetpointControl extends React.Component<SetpointControlProps, SetpointCont
 const styles = (theme: Theme) => ({
     root: {
         display: 'grid',
-        gridTemplateColumns: '120px auto',
+        gridTemplateColumns: '200px auto',
         width: 'fit-content'
     },
     sendButtonContainer: {
@@ -98,4 +104,4 @@ const styles = (theme: Theme) => ({
     }
 });
 
-export default withStyles(styles)(SetpointControl);
+export default withStyles(styles as any)(ParameterControl);
