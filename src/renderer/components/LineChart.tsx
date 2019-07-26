@@ -47,7 +47,6 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
         return (
             <div className={classes.root}>
                 <FlexibleWidthXYPlot
-                    animation
                     xDomain={drawBounds && [drawBounds.left, drawBounds.right]}
                     yDomain={drawBounds && [drawBounds.bottom, drawBounds.top]}
                     height={height || this.DEFAULT_HEIGHT}
