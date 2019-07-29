@@ -26,16 +26,20 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
     };
 
     handleChangeValue = () => {
-        const { newSetpointValue } = this.state;
+        const { newSetpointValue, isDirty } = this.state;
         const { onChangeSetpoint } = this.props;
 
-        onChangeSetpoint(Number(newSetpointValue));
+        if (isDirty) onChangeSetpoint(Number(newSetpointValue));
 
         this.setState({ isDirty: false });
     };
 
+    handlePressEnter = (event: any) => {
+        if (event.key === 'Enter') this.handleChangeValue();
+    };
+
     render() {
-        const { classes, title, current, units, onChangeSetpoint } = this.props;
+        const { classes, title, current, units } = this.props;
         const { isDirty, newSetpointValue } = this.state;
 
         return (
@@ -49,8 +53,6 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
                     value={isDirty ? newSetpointValue : current}
                     InputProps={{
                         inputProps: {
-                            min: -273.15,
-                            max: 500,
                             step: 0.01,
                             style: {
                                 fontSize: 48
@@ -63,6 +65,7 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
                         )
                     }}
                     onChange={this.handleChange}
+                    onKeyPress={this.handlePressEnter}
                 />
                 <div className={classes.sendButtonContainer}>
                     {isDirty && (

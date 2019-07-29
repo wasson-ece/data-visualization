@@ -26,6 +26,7 @@ const defaultState: ControllersState = {
     mfcs: [] as MFC[]
 };
 
+//@ts-ignore
 export const controllersReducer: Reducer<ControllersState, ControllersAction> = (
     state = defaultState,
     action: ControllersAction

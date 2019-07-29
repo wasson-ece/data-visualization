@@ -21,7 +21,6 @@ import EpcView from './EpcView';
 import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
 import { Point } from 'electron';
-import Command from 'node-ti/build/enums/command';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -32,16 +31,16 @@ interface RootProps extends RouteComponentProps {
 }
 
 class Root extends React.Component<RootProps> {
-    readData: NodeJS.Timeout;
+    readData?: NodeJS.Timeout;
 
     constructor(props: RootProps) {
         super(props);
         this.fetchComponents();
-        this.readData = setInterval(this.refreshData, 200);
     }
 
     fetchComponents = async () => {
         await tiClient.connect();
+        this.readData = setInterval(this.refreshData, 200);
         let heaters = await this.getData();
 
         this.props.setHeaterBoards(heaters);
@@ -57,8 +56,6 @@ class Root extends React.Component<RootProps> {
 
     getData = async (): Promise<Heater[]> => {
         let res = await tiClient.getGCStatus();
-        tiClient.sendPIDParameter(4, Command.SetPVal, Math.floor(50 * Math.random()));
-        process.stdout.write('Sending pid val \n');
         const [tiComponents, methodStatus] = decodeGCStatus(res);
         let heaters: Heater[] = [];
         (tiComponents as HeaterComponent[]).forEach((component: HeaterComponent) => {
@@ -129,7 +126,9 @@ const mapState = (state: RootState) => ({
 const styles = {
     root: {
         display: 'grid',
-        gridTemplateColumns: 'auto 1fr'
+        gridTemplateColumns: 'auto 1fr',
+        minHeight: '100%',
+        height: '100%'
     }
 };
 

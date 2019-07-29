@@ -8,6 +8,7 @@ import { PIDParameterCommand } from 'node-ti/build/lib/ti-communication-client';
 import { tiClient } from '../../ti-communication/ti';
 import Command from 'node-ti/build/enums/command';
 import { Point } from 'electron';
+import RunTable from './RunTable';
 
 interface HeaterDetailsProps {
     heater: Heater;
@@ -97,6 +98,9 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                 </div>
                 <div>
                     <LineChart height={500} data={data} />
+                </div>
+                <div>
+                    <RunTable />
                 </div>
             </div>
         );
