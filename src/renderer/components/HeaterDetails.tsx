@@ -7,10 +7,7 @@ import { getRandomSeriesData } from '../../util/random';
 import { PIDParameterCommand } from 'node-ti/build/lib/ti-communication-client';
 import { tiClient } from '../../ti-communication/ti';
 import Command from 'node-ti/build/enums/command';
-
-const setPidValue = async (ovenId: number, type: PIDParameterCommand, value: number) => {
-    tiClient.sendPIDParameter(ovenId, type, value);
-};
+import { Point } from 'electron';
 
 interface HeaterDetailsProps {
     heater: Heater;
@@ -27,20 +24,20 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
         super(props);
     }
 
-    handleSendKpParameter = (value: number) => {
-        tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetPVal, value);
+    handleSendKpParameter = async (value: number) => {
+        await tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetPVal, value);
     };
 
-    handleSendKiParameter = (value: number) => {
-        tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetIVal, value);
+    handleSendKiParameter = async (value: number) => {
+        await tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetIVal, value);
     };
 
-    handleSendKdParameter = (value: number) => {
-        tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetDVal, value);
+    handleSendKdParameter = async (value: number) => {
+        await tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetDVal, value);
     };
 
-    handleSendSetpoint = (value: number) => {
-        tiClient.sendSetpoint(Number(this.props.heater.id), value);
+    handleSendSetpoint = async (value: number) => {
+        await tiClient.sendSetpoint(Number(this.props.heater.id), value);
     };
 
     render = () => {

@@ -19,7 +19,8 @@ const createWindow = async () => {
         await installExtensions();
     }
 
-    win = new BrowserWindow({ width: 800, height: 600 });
+    win = new BrowserWindow();
+    win.maximize();
     win.setTitle('Cooling Oven');
 
     if (process.env.NODE_ENV !== 'production') {

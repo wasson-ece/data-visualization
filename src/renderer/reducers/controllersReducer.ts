@@ -20,10 +20,10 @@ export interface ControllersState {
 }
 
 const defaultState: ControllersState = {
-    epcs: [],
-    dios: [],
-    heaters: [],
-    mfcs: []
+    epcs: [] as EPC[],
+    dios: [] as DIO[],
+    heaters: [] as Heater[],
+    mfcs: [] as MFC[]
 };
 
 export const controllersReducer: Reducer<ControllersState, ControllersAction> = (

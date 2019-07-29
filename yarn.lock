@@ -1393,6 +1393,13 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
+"@types/uuid@^3.4.5":
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.5.tgz#d4dc10785b497a1474eae0ba7f0cb09c0ddfd6eb"
+  integrity sha512-MNL15wC3EKyw1VLF+RoVO4hJJdk9t/Hlv3rt1OL65Qvuadm4BYo6g9ZJQqoq7X8NBFSsQXgAujWciovh2lpVjA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/webdriverio@^4.8.7":
   version "4.13.3"
   resolved "https://registry.yarnpkg.com/@types/webdriverio/-/webdriverio-4.13.3.tgz#c1571c4e62724135c0b11e7d7e36b07af5168856"
@@ -7537,11 +7544,13 @@ node-sass@^4.12.0:
 
 "node-ti@git+ssh://git@github.com:wasson-ece/node-ti.git":
   version "0.0.2"
-  resolved "git+ssh://git@github.com:wasson-ece/node-ti.git#406853e4605fb61da07000094364d71129ec4cb0"
+  resolved "git+ssh://git@github.com:wasson-ece/node-ti.git#bb2da0590370a11cf718937cb2ad088f4467c272"
   dependencies:
     "@types/ini" "^1.3.30"
     "@types/node" "^12.6.8"
+    "@types/uuid" "^3.4.5"
     ini "^1.3.5"
+    uuid "^3.3.2"
 
 "nopt@2 || 3":
   version "3.0.6"

@@ -73,8 +73,8 @@
         "url": "git+ssh://git@github.com:Robinfr/electron-react-typescript.git"
     },
     "author": {
-        "name": "Your name",
-        "email": "Your email"
+        "name": "Daniel Young",
+        "email": "daniel_young@wasson-ece.com"
     },
     "license": "SEE LICENSE",
     "bugs": {

@@ -19,9 +19,9 @@ import { ControllerSidebarItem } from '../../enums/SidebarItems';
 import DioView from './DioView';
 import EpcView from './EpcView';
 import MfcView from './MfcView';
-import TIComponent from 'node-ti/build/ti-components/ti-component';
 import { tiClient } from '../../ti-communication/ti';
 import { Point } from 'electron';
+import Command from 'node-ti/build/enums/command';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -37,10 +37,11 @@ class Root extends React.Component<RootProps> {
     constructor(props: RootProps) {
         super(props);
         this.fetchComponents();
-        this.readData = setInterval(this.refreshData, 500);
+        this.readData = setInterval(this.refreshData, 200);
     }
 
     fetchComponents = async () => {
+        await tiClient.connect();
         let heaters = await this.getData();
 
         this.props.setHeaterBoards(heaters);
@@ -56,6 +57,8 @@ class Root extends React.Component<RootProps> {
 
     getData = async (): Promise<Heater[]> => {
         let res = await tiClient.getGCStatus();
+        tiClient.sendPIDParameter(4, Command.SetPVal, Math.floor(50 * Math.random()));
+        process.stdout.write('Sending pid val \n');
         const [tiComponents, methodStatus] = decodeGCStatus(res);
         let heaters: Heater[] = [];
         (tiComponents as HeaterComponent[]).forEach((component: HeaterComponent) => {
@@ -63,7 +66,7 @@ class Root extends React.Component<RootProps> {
                 new Heater(
                     String(component.id),
                     Number(component.setpoint.toFixed(2)),
-                    Number(component.temperature.toFixed(2)),
+                    component.temperature,
                     Number(component.pidTune.kp.toFixed(0)),
                     Number(component.pidTune.ki.toFixed(0)),
                     Number(component.pidTune.kd.toFixed(0))

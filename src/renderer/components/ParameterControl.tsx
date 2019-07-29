@@ -25,7 +25,7 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
         this.setState({ isDirty: true, newSetpointValue: e.target.value });
     };
 
-    handleChangeSetpoint = () => {
+    handleChangeValue = () => {
         const { newSetpointValue } = this.state;
         const { onChangeSetpoint } = this.props;
 
@@ -68,9 +68,9 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
                     {isDirty && (
                         <Button
                             className={classes.sendSetpointButton}
-                            onClick={this.handleChangeSetpoint}
+                            onClick={this.handleChangeValue}
                         >
-                            <span className={classes.buttonText}>Send Setpoint</span>
+                            <span className={classes.buttonText}>Send Value</span>
                             <SendIcon />
                         </Button>
                     )}
