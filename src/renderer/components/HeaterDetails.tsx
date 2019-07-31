@@ -3,12 +3,9 @@ import Heater from '../../ti-components/controllers/Heater';
 import ParameterControl from './ParameterControl';
 import { TextField, InputAdornment, withStyles, Theme } from '@material-ui/core';
 import LineChart from './LineChart';
-import { getRandomSeriesData } from '../../util/random';
-import { PIDParameterCommand } from 'node-ti/build/lib/ti-communication-client';
 import { tiClient } from '../../ti-communication/ti';
 import Command from 'node-ti/build/enums/command';
 import { Point } from 'electron';
-import RunTable from './RunTable';
 
 interface HeaterDetailsProps {
     heater: Heater;
@@ -99,18 +96,12 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                 <div>
                     <LineChart height={500} data={data} />
                 </div>
-                <div>
-                    <RunTable />
-                </div>
             </div>
         );
     };
 }
 
 const styles = (theme: Theme) => ({
-    root: {
-        padding: theme.spacing(3)
-    },
     readings: {
         width: 'fit-content',
         margin: '0 auto',

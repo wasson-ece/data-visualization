@@ -6,7 +6,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { TextField } from '@material-ui/core';
+import Run from '../../interfaces/Run';
+import HeaterRunRow from './HeaterRunRow';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -24,8 +25,15 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-export default function RunTable() {
+export interface RunTableProps {
+    id: string;
+    runs: Run[];
+}
+
+export default function RunTable(props: RunTableProps) {
     const classes = useStyles();
+
+    const { runs, id } = props;
 
     return (
         <Paper className={classes.root}>
@@ -39,50 +47,18 @@ export default function RunTable() {
                         <TableCell>Setpoint Temperature (°C)</TableCell>
                         <TableCell>Equilibration Time (Minutes)</TableCell>
                         <TableCell>Setpoint Hold Time (Minutes)</TableCell>
+                        <TableCell>Delete</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    <TableRow>
-                        <TableCell>1</TableCell>
-                        <TableCell>3</TableCell>
-                        <TableCell>2</TableCell>
-                        <TableCell>4</TableCell>
-                        <TableCell>5</TableCell>
-                        <TableCell>6</TableCell>
-                        <TableCell>7</TableCell>
-                    </TableRow>
-                    <TableRow className={classes.runFinished}>
-                        <TableCell>1</TableCell>
-                        <TableCell>3</TableCell>
-                        <TableCell>2</TableCell>
-                        <TableCell>4</TableCell>
-                        <TableCell>5</TableCell>
-                        <TableCell>6</TableCell>
-                        <TableCell>7</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
-                            <TextField />
-                        </TableCell>
-                        <TableCell>
-                            <TextField />
-                        </TableCell>
-                        <TableCell>
-                            <TextField />
-                        </TableCell>
-                        <TableCell>
-                            <TextField />
-                        </TableCell>
-                        <TableCell>
-                            <TextField />
-                        </TableCell>
-                        <TableCell>
-                            <TextField />
-                        </TableCell>
-                        <TableCell>
-                            <TextField />
-                        </TableCell>
-                    </TableRow>
+                    {runs.map((run, index) => (
+                        <HeaterRunRow
+                            run={run}
+                            key={`${id}-${index}`}
+                            heaterId={id}
+                            runIndex={index}
+                        />
+                    ))}
                 </TableBody>
             </Table>
         </Paper>

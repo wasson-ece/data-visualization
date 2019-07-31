@@ -3,6 +3,8 @@ import { combineReducers } from 'redux';
 import { ControllersState, controllersReducer } from './controllersReducer';
 import { Point } from 'electron';
 import { ControllerDataState, controllerDataReducer } from './controllerDataReducer';
+import Run from '../../interfaces/Run';
+import { runsReducer } from './runsReducer';
 
 export interface RootState {
     controllers: ControllersState;
@@ -23,10 +25,13 @@ export interface RootState {
     //     };
     // };
     controllerData: ControllerDataState;
-    // };
+    heaterRuns: {
+        [heaterId: string]: Run[];
+    };
 }
 
 export const rootReducer = combineReducers<RootState | undefined>({
     controllers: controllersReducer,
-    controllerData: controllerDataReducer
+    controllerData: controllerDataReducer,
+    heaterRuns: runsReducer
 });
