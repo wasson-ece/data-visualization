@@ -7,4 +7,5 @@ export default interface Run {
     equilibrationTime?: string;
     setpointHoldTime?: string;
     isFinished?: boolean;
+    uuid: string;
 }

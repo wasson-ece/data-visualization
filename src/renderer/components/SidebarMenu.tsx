@@ -121,7 +121,7 @@ function SidebarMenu(props: SidebarMenuProps) {
                                 variant="outlined"
                                 onClick={onToggleDataCollection}
                             >
-                                {isCollectingData ? 'Stop' : 'Start'} Collecting Data
+                                {isCollectingData ? 'Stop' : 'Start'} Data Collection
                             </Button>
                         </div>
                         <div className={classes.labelContainer}>
@@ -143,7 +143,7 @@ function SidebarMenu(props: SidebarMenuProps) {
                                 </List>
                             </Collapse>
                             <ListItem button onClick={handleClickEpcDrawer}>
-                                <ListItemText primary="Electronic Pressure Controllers (EPC)" />
+                                <ListItemText primary="Electronic Pressure (EPC)" />
                                 {epcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={epcDrawerIsOpen} timeout="auto" unmountOnExit>
@@ -183,7 +183,7 @@ function SidebarMenu(props: SidebarMenuProps) {
                                 </List>
                             </Collapse>
                             <ListItem button onClick={handleClickMfcDrawer}>
-                                <ListItemText primary="Mass Flow Controllers (MFC)" />
+                                <ListItemText primary="Mass Flow (MFC)" />
                                 {mfcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={mfcDrawerIsOpen} timeout="auto" unmountOnExit>

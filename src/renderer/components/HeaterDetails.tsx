@@ -94,7 +94,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                     />
                 </div>
                 <div>
-                    <LineChart height={500} data={data} />
+                    <LineChart height={500} data={data} setpoint={heater.setpoint} />
                 </div>
             </div>
         );

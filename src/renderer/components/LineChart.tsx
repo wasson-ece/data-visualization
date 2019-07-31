@@ -18,6 +18,7 @@ interface LineChartProps {
     data: Point[];
     classes: any;
     height?: number;
+    setpoint?: number;
 }
 
 interface LineChartState {
@@ -41,8 +42,16 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
     DEFAULT_HEIGHT = 300;
 
     render() {
-        const { data, classes, height } = this.props;
+        const { data, classes, height, setpoint } = this.props;
         const { drawBounds, area } = this.state;
+        const setpointLine =
+            (setpoint &&
+                data &&
+                data.length > 1 && [
+                    { x: data[0].x, y: setpoint },
+                    { x: data[data.length - 1].x, y: setpoint }
+                ]) ||
+            null;
 
         return (
             <div className={classes.root}>
@@ -55,6 +64,12 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
                     <YAxis />
                     <XAxis />
                     <LineSeriesCanvas data={data} color={theme.palette.primary.main} />
+                    {setpoint && setpointLine && (
+                        <LineSeriesCanvas
+                            data={setpointLine}
+                            color={theme.palette.secondary.main}
+                        />
+                    )}
                     <Highlight
                         onBrushEnd={(nextDrawBounds: DrawBounds) => {
                             this.setState({ drawBounds: nextDrawBounds });
