@@ -6,12 +6,12 @@ import {
     YAxis,
     HorizontalGridLines,
     LineSeriesCanvas,
-    LineSeries,
     Highlight
     // @ts-ignore
 } from 'react-vis';
 import { withStyles, Theme } from '@material-ui/core';
 import { Point } from 'electron';
+import { theme } from '../../style/theme';
 require('react-vis/dist/style.css');
 
 interface LineChartProps {
@@ -54,7 +54,7 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
                     <HorizontalGridLines />
                     <YAxis />
                     <XAxis />
-                    <LineSeriesCanvas data={data} />
+                    <LineSeriesCanvas data={data} color={theme.palette.primary.main} />
                     <Highlight
                         onBrushEnd={(nextDrawBounds: DrawBounds) => {
                             this.setState({ drawBounds: nextDrawBounds });

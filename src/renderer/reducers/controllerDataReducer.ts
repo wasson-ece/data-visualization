@@ -1,16 +1,6 @@
 import { Reducer } from 'redux';
 
-import {
-    addController,
-    removeController,
-    setControllerAttribute,
-    ControllersAction
-} from '../actions/controllersActions';
-import EPC from '../../ti-components/controllers/EPC';
-import DIO from '../../ti-components/controllers/DIO';
-import Heater from '../../ti-components/controllers/Heater';
-import MFC from '../../ti-components/controllers/MFC';
-import ControllerType from '../../enums/ControllerType';
+import { ControllersAction } from '../actions/controllersActions';
 import { Point } from 'electron';
 
 export interface ControllerDataState {

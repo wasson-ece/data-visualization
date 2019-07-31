@@ -21,13 +21,16 @@ import EpcView from './EpcView';
 import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
 import { Point } from 'electron';
+import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollectionActions';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
     setHeaterBoards: (detectors: Heater[]) => void;
     updateHeaterBoards: (detectors: Heater[]) => void;
     addHeaterDatum: (id: string, datum: Point) => void;
+    toggleDataCollection: () => void;
     heaters: Heater[];
+    isCollectingData: boolean;
 }
 
 class Root extends React.Component<RootProps> {
@@ -38,9 +41,18 @@ class Root extends React.Component<RootProps> {
         this.fetchComponents();
     }
 
+    componentWillReceiveProps = (nextProps: RootProps) => {
+        /* Turn on/off data collection based on store state */
+        if (nextProps.isCollectingData && !this.readData)
+            this.readData = setInterval(this.refreshData, 200);
+        if (!nextProps.isCollectingData && this.readData) {
+            clearInterval(this.readData);
+            this.readData = undefined;
+        }
+    };
+
     fetchComponents = async () => {
         await tiClient.connect();
-        this.readData = setInterval(this.refreshData, 200);
         let heaters = await this.getData();
 
         this.props.setHeaterBoards(heaters);
@@ -75,12 +87,17 @@ class Root extends React.Component<RootProps> {
     };
 
     render = () => {
+        const { toggleDataCollection, heaters } = this.props;
         return (
             <div className={this.props.classes.root}>
-                <SidebarMenu />
+                <SidebarMenu
+                    isCollectingData={this.props.isCollectingData}
+                    onToggleDataCollection={toggleDataCollection}
+                    heaters={heaters}
+                />
                 <main>
                     <Route
-                        path={`/controllers/${ControllerSidebarItem.Oven}`}
+                        path={`/controllers/${ControllerSidebarItem.Oven}/:id`}
                         component={HeaterView}
                     />
                     <Route
@@ -98,29 +115,24 @@ class Root extends React.Component<RootProps> {
                         path={`/controllers/${ControllerSidebarItem['Mass Flow (MFC)']}`}
                         component={MfcView}
                     />
-                    {/* <TabMenu
-                        options={heaters.map(heater => ({
-                            id: heater.id,
-                            label: `Heater ${heater.id}`
-                        }))}
-                    /> */}
-                    {/* <DataVisualizationContainer /> */}
                 </main>
             </div>
         );
     };
 }
 
-const mapDispatch = (dispatch: Dispatch<ControllersAction>) => ({
+const mapDispatch = (dispatch: Dispatch<ControllersAction | DataCollectionAction>) => ({
     setHeaterBoards: (controllers: Heater[]) =>
         dispatch({ type: 'SET_CONTROLLERS', controllerType: ControllerType.Heater, controllers }),
     updateHeaterBoards: (controllers: Heater[]) =>
         dispatch(updateControllers(ControllerType.Heater, controllers)),
-    addHeaterDatum: (id: string, point: Point) => dispatch(addHeaterDatum(id, point))
+    addHeaterDatum: (id: string, point: Point) => dispatch(addHeaterDatum(id, point)),
+    toggleDataCollection: () => dispatch(toggleDataCollection())
 });
 
 const mapState = (state: RootState) => ({
-    heaters: state.controllers.heaters
+    heaters: state.controllers.heaters,
+    isCollectingData: state.dataCollection.isCollectingData
 });
 
 const styles = {

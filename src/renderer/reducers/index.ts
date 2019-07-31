@@ -5,6 +5,7 @@ import { Point } from 'electron';
 import { ControllerDataState, controllerDataReducer } from './controllerDataReducer';
 import Run from '../../interfaces/Run';
 import { runsReducer } from './runsReducer';
+import { DataCollectionState, dataCollectionReducer } from './dataCollectionReducer';
 
 export interface RootState {
     controllers: ControllersState;
@@ -28,10 +29,12 @@ export interface RootState {
     heaterRuns: {
         [heaterId: string]: Run[];
     };
+    dataCollection: DataCollectionState;
 }
 
 export const rootReducer = combineReducers<RootState | undefined>({
     controllers: controllersReducer,
     controllerData: controllerDataReducer,
-    heaterRuns: runsReducer
+    heaterRuns: runsReducer,
+    dataCollection: dataCollectionReducer
 });

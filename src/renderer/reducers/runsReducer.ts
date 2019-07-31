@@ -13,19 +13,19 @@ const ABSOLUTE_ZERO = -273.15;
 const isRunValid = (run: Run): boolean =>
     Boolean(
         run.kp !== undefined &&
-            run.kp >= 0 &&
+            Number(run.kp) >= 0 &&
             run.ki !== undefined &&
-            run.ki >= 0 &&
+            Number(run.ki) >= 0 &&
             run.kd !== undefined &&
-            run.kd >= 0 &&
+            Number(run.kd) >= 0 &&
             run.baseline !== undefined &&
-            run.baseline > ABSOLUTE_ZERO &&
+            Number(run.baseline) > ABSOLUTE_ZERO &&
             run.setpoint !== undefined &&
-            run.setpoint > ABSOLUTE_ZERO &&
+            Number(run.setpoint) > ABSOLUTE_ZERO &&
             run.equilibrationTime !== undefined &&
-            run.equilibrationTime > 0 &&
+            Number(run.equilibrationTime) > 0 &&
             run.setpointHoldTime !== undefined &&
-            run.setpointHoldTime > 0
+            Number(run.setpointHoldTime) > 0
     );
 
 export const runsReducer: Reducer<RunsState, RunsAction> = (

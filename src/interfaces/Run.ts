@@ -1,9 +1,10 @@
 export default interface Run {
-    kp?: number;
-    ki?: number;
-    kd?: number;
-    baseline?: number;
-    setpoint?: number;
-    equilibrationTime?: number;
-    setpointHoldTime?: number;
+    kp?: string;
+    ki?: string;
+    kd?: string;
+    baseline?: string;
+    setpoint?: string;
+    equilibrationTime?: string;
+    setpointHoldTime?: string;
+    isFinished?: boolean;
 }

@@ -8,8 +8,13 @@ import { Point } from 'electron';
 import Run from '../../interfaces/Run';
 import RunTable from './RunTable';
 import { Theme, withStyles } from '@material-ui/core';
+import { RouteComponentProps } from 'react-router-dom';
 
-interface HeaterViewProps {
+interface HeaterRouteProps {
+    id: string;
+}
+
+interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
     heaters: Heater[];
     heaterData: {
         [heaterId: string]: Point[];
@@ -35,18 +40,10 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
 
     render = () => {
         const { heaters, heaterData, heaterRuns, classes } = this.props;
-        const { selectedHeater } = this.state;
-        const heater = selectedHeater != undefined && heaters[selectedHeater];
+        const id = this.props.match.params.id;
+        const heater = heaters.find(h => h.id == id);
         return (
             <div className={classes.root}>
-                <TabMenu
-                    options={heaters.map(heater => ({
-                        id: heater.id,
-                        label: `Heater ${heater.id}`
-                    }))}
-                    value={this.state.selectedHeater}
-                    onChange={this.handleSelectHeater}
-                />
                 <div className={classes.details}>
                     {heater && (
                         <HeaterDetails
@@ -55,7 +52,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                             data={heaterData[heater.id]}
                         />
                     )}
-                    {heater && <RunTable id={heater.id} runs={heaterRuns[heater.id] || [{}]} />}
+                    {heater && <RunTable id={id} runs={heaterRuns[id] || [{}]} />}
                 </div>
             </div>
         );
@@ -69,9 +66,7 @@ const mapState = (state: RootState) => ({
 });
 
 const styles = (theme: Theme) => ({
-    root: {
-        boxSizing: 'border-box'
-    },
+    root: {},
     details: {
         padding: theme.spacing(3)
     }

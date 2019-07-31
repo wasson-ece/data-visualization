@@ -1,10 +1,11 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import { orange } from '@material-ui/core/colors';
+import { red, purple } from '@material-ui/core/colors';
 
 export const theme = createMuiTheme({
     palette: {
         type: 'dark',
-        secondary: orange
+        secondary: purple,
+        primary: red
     },
     typography: {
         fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif"
