@@ -74,6 +74,12 @@ export const dataCollectionReducer: Reducer<DataCollectionState, DataCollectionA
                 activeRuns: state.activeRuns.filter(r => r.runId != action.runId),
                 finishedRuns: [...state.finishedRuns, finishedRun]
             };
+        case 'ABORT_RUN':
+            runIndex = state.activeRuns.findIndex(r => r.runId === action.runId);
+            return {
+                ...state,
+                activeRuns: state.activeRuns.filter(r => r.runId != action.runId)
+            };
         default:
             return state;
     }

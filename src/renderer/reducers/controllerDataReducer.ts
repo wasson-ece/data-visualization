@@ -41,6 +41,14 @@ export const controllerDataReducer: Reducer<ControllerDataState, ControllersActi
                         [action.id]: [...state.heaters[action.id], action.datum]
                     }
                 };
+        case 'CLEAR_HEATER_DATA':
+            return {
+                ...state,
+                heater: {
+                    ...state.heaters,
+                    [action.id]: []
+                }
+            };
         default:
             return state;
     }

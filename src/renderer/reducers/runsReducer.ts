@@ -1,4 +1,5 @@
 import { Reducer } from 'redux';
+const uuidv1 = require('uuid/v1');
 
 import { RunsAction } from '../actions/runsActions';
 import Run from '../../interfaces/Run';
@@ -10,7 +11,7 @@ export interface RunsState {
 const defaultState: RunsState = {};
 
 const ABSOLUTE_ZERO = -273.15;
-const isRunValid = (run: Run): boolean =>
+export const isRunValid = (run: Run): boolean =>
     Boolean(
         run.kp !== undefined &&
             Number(run.kp) >= 0 &&
@@ -41,7 +42,16 @@ export const runsReducer: Reducer<RunsState, RunsAction> = (
             };
             let freshLastRows: Run[] = [];
             if (isRunValid(editedRun) && action.runIndex === heaterRuns.length - 1)
-                freshLastRows = [{ ...editedRun, kp: undefined, ki: undefined, kd: undefined }];
+                freshLastRows = [
+                    {
+                        ...editedRun,
+                        kp: undefined,
+                        ki: undefined,
+                        kd: undefined,
+                        uuid: uuidv1(),
+                        isFinished: false
+                    }
+                ];
             return {
                 ...heaterRuns,
                 [action.heaterId]: [

@@ -6,6 +6,6 @@ export default interface Run {
     setpoint?: string;
     equilibrationTime?: string;
     setpointHoldTime?: string;
-    isFinished?: boolean;
     uuid: string;
+    isFinished: boolean;
 }

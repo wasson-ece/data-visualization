@@ -9,6 +9,8 @@ import Run from '../../interfaces/Run';
 import RunTable from './RunTable';
 import { Theme, withStyles } from '@material-ui/core';
 import { RouteComponentProps } from 'react-router-dom';
+import { number } from 'prop-types';
+const uuidv1 = require('uuid/v1');
 
 interface HeaterRouteProps {
     id: string;
@@ -25,18 +27,25 @@ interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
     classes: any;
 }
 
-interface HeaterViewState {
-    selectedHeater?: number;
-}
+interface HeaterViewState {}
 
 class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
+    heaterRunsInterval: NodeJS.Timeout | null;
+
     constructor(props: HeaterViewProps) {
         super(props);
         this.state = {};
+        this.heaterRunsInterval = null;
     }
 
-    handleSelectHeater = (event: React.ChangeEvent<{}>, newValue: number) =>
-        this.setState({ selectedHeater: newValue });
+    handleCurrentRunStatus = () => {};
+
+    handleStartRuns = () => {
+        this.heaterRunsInterval = setInterval(this.handleCurrentRunStatus, 100);
+        sendRunPIDParameters(Number());
+    };
+
+    handleStopRuns = () => {};
 
     render = () => {
         const { heaters, heaterData, heaterRuns, classes } = this.props;
@@ -52,7 +61,32 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                             data={heaterData[heater.id]}
                         />
                     )}
-                    {heater && <RunTable id={id} runs={heaterRuns[id] || [{}]} />}
+                    {heater && (
+                        <RunTable
+                            id={id}
+                            runs={heaterRuns[id] || [{ uuid: uuidv1(), isFinished: false }]}
+                            currentRun={{
+                                uuid: 'abdc',
+                                baseline: '20',
+                                setpoint: '-3',
+                                equilibrationTime: '4.5',
+                                setpointHoldTime: '15',
+                                kp: '10',
+                                ki: '10',
+                                kd: '20',
+                                isFinished: false
+                            }}
+                            currentRunStatus={{
+                                runId: 'abdc',
+                                ovenId: '3',
+                                equilibrationStartTime: Date.now(),
+                                setpointStartTime: null,
+                                finishTime: null
+                            }}
+                            onStartRuns={this.handleStartRuns}
+                            onStopRuns={this.handleStopRuns}
+                        />
+                    )}
                 </div>
             </div>
         );

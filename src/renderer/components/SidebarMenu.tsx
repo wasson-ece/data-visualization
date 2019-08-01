@@ -118,7 +118,7 @@ function SidebarMenu(props: SidebarMenuProps) {
                         <div className={classes.globalButtonPanel}>
                             <Button
                                 color="primary"
-                                variant="outlined"
+                                variant="contained"
                                 onClick={onToggleDataCollection}
                             >
                                 {isCollectingData ? 'Stop' : 'Start'} Data Collection

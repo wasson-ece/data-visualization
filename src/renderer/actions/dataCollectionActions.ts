@@ -25,6 +25,11 @@ export interface EndRun extends Action {
     runId: string;
 }
 
+export interface AbortRun extends Action {
+    type: 'ABORT_RUN';
+    runId: string;
+}
+
 export const toggleDataCollection: ActionCreator<ToggleDataCollection> = () => ({
     type: 'TOGGLE_DATA_COLLECTION'
 });
@@ -50,9 +55,15 @@ export const endRun: ActionCreator<EndRun> = (runId: string) => ({
     runId
 });
 
+export const abortRun: ActionCreator<AbortRun> = (runId: string) => ({
+    type: 'ABORT_RUN',
+    runId
+});
+
 export type DataCollectionAction =
     | StartRun
     | ToggleDataCollection
     | StartEquilibration
     | StartSetpointHold
-    | EndRun;
+    | EndRun
+    | AbortRun;

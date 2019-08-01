@@ -27,6 +27,11 @@ export interface AddHeaterDatum extends Action {
     datum: Point;
 }
 
+export interface ClearHeaterData extends Action {
+    type: 'CLEAR_HEATER_DATA';
+    id: string;
+}
+
 export interface RemoveController extends Action {
     type: 'REMOVE_CONTROLLER';
     controllerType: ControllerType;
@@ -64,6 +69,11 @@ export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum:
     datum
 });
 
+export const clearHeaterData: ActionCreator<ClearHeaterData> = (ovenId: string) => ({
+    type: 'CLEAR_HEATER_DATA',
+    id: ovenId
+});
+
 export const setControllerAttribute: ActionCreator<RemoveController> = (
     controllerType: ControllerType,
     id: string,
@@ -92,4 +102,5 @@ export type ControllersAction =
     | SetControllerAttribute
     | UpdateControllers
     | SetControllers
-    | AddHeaterDatum;
+    | AddHeaterDatum
+    | ClearHeaterData;
