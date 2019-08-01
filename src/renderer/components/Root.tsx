@@ -5,14 +5,9 @@ import HeaterComponent from 'node-ti/build/ti-components/heater-component';
 import { withStyles } from '@material-ui/core';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import {
-    ControllersAction,
-    updateControllers,
-    addHeaterDatum
-} from '../actions/controllersActions';
+import { ControllersAction, updateControllers, addHeaterDatum } from '../actions/heaters';
 import ControllerType from '../../enums/ControllerType';
-import Heater from '../../ti-components/controllers/Heater';
-import { RootState } from '../reducers';
+import { RootState } from '../reducers/root';
 import { withRouter, Route, RouteComponentProps } from 'react-router-dom';
 import HeaterView from './HeaterView';
 import { ControllerSidebarItem } from '../../enums/SidebarItems';
@@ -22,6 +17,7 @@ import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
 import { Point } from 'electron';
 import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollectionActions';
+import Heater from '../../interfaces/Heater';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -71,16 +67,16 @@ class Root extends React.Component<RootProps> {
         const [tiComponents, methodStatus] = decodeGCStatus(res);
         let heaters: Heater[] = [];
         (tiComponents as HeaterComponent[]).forEach((component: HeaterComponent) => {
-            heaters.push(
-                new Heater(
-                    String(component.id),
-                    Number(component.setpoint.toFixed(2)),
-                    component.temperature,
-                    Number(component.pidTune.kp.toFixed(0)),
-                    Number(component.pidTune.ki.toFixed(0)),
-                    Number(component.pidTune.kd.toFixed(0))
-                )
-            );
+            heaters.push({
+                id: String(component.id),
+                setpoint: Number(component.setpoint.toFixed(2)),
+                actual: component.temperature,
+                kp: Number(component.pidTune.kp.toFixed(0)),
+                ki: Number(component.pidTune.ki.toFixed(0)),
+                kd: Number(component.pidTune.kd.toFixed(0)),
+                output: 0,
+                data: []
+            });
         });
 
         return heaters;

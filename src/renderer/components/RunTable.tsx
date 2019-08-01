@@ -9,7 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import Run from '../../interfaces/Run';
 import HeaterRunRow from './HeaterRunRow';
 import { Button, Toolbar, TextField, FormLabel } from '@material-ui/core';
-import { isRunValid } from '../reducers/runsReducer';
+import { isRunValid } from '../reducers/runs';
 import RunStatus from '../../interfaces/RunStatus';
 
 const hasValidRun = (runs: Run[]): boolean => runs.some(run => isRunValid(run));

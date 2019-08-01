@@ -1,4 +1,7 @@
+import { Point } from 'electron';
+
 export default interface Run {
+    uuid: string;
     kp?: string;
     ki?: string;
     kd?: string;
@@ -6,6 +9,6 @@ export default interface Run {
     setpoint?: string;
     equilibrationTime?: string;
     setpointHoldTime?: string;
-    uuid: string;
+    startTime: number;
     isFinished: boolean;
 }

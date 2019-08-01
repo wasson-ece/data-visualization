@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 const uuidv1 = require('uuid/v1');
 
-import { RunsAction } from '../actions/runsActions';
+import { RunsAction } from '../actions/runs';
 import Run from '../../interfaces/Run';
 
 export interface RunsState {
@@ -29,10 +29,7 @@ export const isRunValid = (run: Run): boolean =>
             Number(run.setpointHoldTime) > 0
     );
 
-export const runsReducer: Reducer<RunsState, RunsAction> = (
-    state = defaultState,
-    action: RunsAction
-) => {
+export const runs: Reducer<RunsState, RunsAction> = (state = defaultState, action: RunsAction) => {
     switch (action.type) {
         case 'EDIT_RUN':
             const heaterRuns = state[action.heaterId] || [];

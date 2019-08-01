@@ -1,7 +1,7 @@
 import * as React from 'react';
 import TabMenu from './TabMenu';
 import Heater from '../../ti-components/controllers/Heater';
-import { RootState } from '../reducers';
+import { RootState } from '../reducers/root';
 import { connect } from 'react-redux';
 import HeaterDetails from './HeaterDetails';
 import { Point } from 'electron';
@@ -30,22 +30,31 @@ interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
 interface HeaterViewState {}
 
 class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
-    heaterRunsInterval: NodeJS.Timeout | null;
+    heaterRunsLoop: NodeJS.Timeout | null;
 
     constructor(props: HeaterViewProps) {
         super(props);
         this.state = {};
-        this.heaterRunsInterval = null;
+        this.heaterRunsLoop = null;
     }
 
     handleCurrentRunStatus = () => {};
 
-    handleStartRuns = () => {
-        this.heaterRunsInterval = setInterval(this.handleCurrentRunStatus, 100);
+    handleAbortCurrentRun = () => {};
+
+    handleStartNextRun = (run: Run) => {
         sendRunPIDParameters(Number());
     };
 
-    handleStopRuns = () => {};
+    handleEndCurrentRun = (run: Run) => {};
+
+    handleStartRuns = () => {
+        this.heaterRunsLoop = setInterval(this.handleCurrentRunStatus, 100);
+    };
+
+    handleStopRuns = () => {
+        this.handleAbortCurrentRun();
+    };
 
     render = () => {
         const { heaters, heaterData, heaterRuns, classes } = this.props;

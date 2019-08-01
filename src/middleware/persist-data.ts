@@ -1,5 +1,5 @@
 import { Dispatch, Store } from 'redux';
-import { RootState, RootAction } from '../renderer/reducers/index';
+import { RootState, RootAction } from '../renderer/reducers/root';
 import Run from '../interfaces/Run';
 import RunStatus from '../interfaces/RunStatus';
 import { Point } from 'electron';

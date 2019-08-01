@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 
-import { ControllersAction } from '../actions/controllersActions';
+import { ControllersAction } from '../actions/heaters';
 import { Point } from 'electron';
 
 export interface ControllerDataState {

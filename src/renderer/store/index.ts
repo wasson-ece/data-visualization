@@ -1,7 +1,7 @@
 import { applyMiddleware, createStore, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
-import { rootReducer, RootState } from '../reducers';
+import { rootReducer, RootState } from '../reducers/root';
 import persistData from '../../middleware/persist-data';
 import influxDataPersistence from '../../db/influx-data-persistence';
 

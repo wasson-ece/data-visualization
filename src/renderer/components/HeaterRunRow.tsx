@@ -13,7 +13,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import Run from '../../interfaces/Run';
-import { deleteRun, editRun } from '../actions/runsActions';
+import { deleteRun, editRun } from '../actions/runs';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
