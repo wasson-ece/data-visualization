@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         adornment: {
             color: '#666'
+        },
+        running: {
+            backgroundColor: 'rgb(89, 89, 89)'
         }
     })
 );
@@ -59,7 +62,7 @@ function HeaterRunRow(props: RunRowProps) {
     const handleDeleteRow = () => deleteHeaterRunRow(heaterId, runIndex);
 
     return (
-        <TableRow>
+        <TableRow className={(run.isRunning && classes.running) || undefined}>
             <TableCell>
                 <TextField value={run.kp || ''} onChange={handleChangeKpValue} placeholder="Kp" />
             </TableCell>

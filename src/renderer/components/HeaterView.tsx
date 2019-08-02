@@ -2,14 +2,12 @@ import * as React from 'react';
 import { RootState } from '../reducers';
 import { connect } from 'react-redux';
 import HeaterDetails from './HeaterDetails';
-import Run from '../../interfaces/Run';
 import RunTable from './RunTable';
 import { Theme, withStyles } from '@material-ui/core';
 import { RouteComponentProps } from 'react-router-dom';
 import HeaterState from '../../interfaces/HeaterState';
-import { defaultRunState } from '../reducers/run';
-import deepCopy from '../../util/deep-copy';
-const uuidv1 = require('uuid/v1');
+import { Dispatch } from 'redux';
+import { startNextRun, abourtRun } from '../actions/Run';
 
 interface HeaterRouteProps {
     id: string;
@@ -18,39 +16,20 @@ interface HeaterRouteProps {
 interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
     heaters: HeaterState[];
     classes: any;
+    startNextRun: (heaterId: string) => void;
+    abortCurrentRun: (heaterId: string) => void;
 }
 
 interface HeaterViewState {}
 
 class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
-    heaterRunsLoop: NodeJS.Timeout | null;
-
     constructor(props: HeaterViewProps) {
         super(props);
         this.state = {};
-        this.heaterRunsLoop = null;
     }
 
-    handleCurrentRunStatus = () => {};
-
-    handleAbortCurrentRun = () => {};
-
-    handleStartNextRun = (run: Run) => {
-        // sendRunPIDParameters(Number());
-    };
-
-    handleEndCurrentRun = (run: Run) => {};
-
-    handleStartRuns = () => {
-        this.heaterRunsLoop = setInterval(this.handleCurrentRunStatus, 100);
-    };
-
-    handleStopRuns = () => {
-        this.handleAbortCurrentRun();
-    };
-
     render = () => {
-        const { heaters, classes } = this.props;
+        const { heaters, classes, startNextRun, abortCurrentRun } = this.props;
         const id = this.props.match.params.id;
         const heater = heaters.find(h => h.id == id);
         return (
@@ -61,20 +40,9 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                         <RunTable
                             id={id}
                             runs={heater.runs}
-                            currentRun={{
-                                uuid: 'abdc',
-                                baseline: '20',
-                                setpoint: '-3',
-                                equilibrationTime: '4.5',
-                                setpointHoldTime: '15',
-                                kp: '10',
-                                ki: '10',
-                                kd: '20',
-                                isFinished: false,
-                                startTime: 20
-                            }}
-                            onStartRuns={this.handleStartRuns}
-                            onStopRuns={this.handleStopRuns}
+                            currentRun={heater.runs.find(r => r.isRunning)}
+                            onStartRuns={() => this.props.startNextRun(heater.id)}
+                            onStopRuns={() => this.props.abortCurrentRun(heater.id)}
                         />
                     )}
                 </div>
@@ -87,6 +55,11 @@ const mapState = (state: RootState) => ({
     heaters: state.heaters
 });
 
+const mapDispatch = (dispatch: Dispatch) => ({
+    startNextRun: (heaterId: string) => dispatch(startNextRun(heaterId)),
+    abortCurrentRun: (heaterId: string) => dispatch(abourtRun(heaterId))
+});
+
 const styles = (theme: Theme) => ({
     root: {},
     details: {
@@ -94,4 +67,7 @@ const styles = (theme: Theme) => ({
     }
 });
 
-export default connect(mapState)(withStyles(styles)(HeaterView));
+export default connect(
+    mapState,
+    mapDispatch
+)(withStyles(styles)(HeaterView));

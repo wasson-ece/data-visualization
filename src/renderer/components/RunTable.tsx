@@ -66,15 +66,8 @@ export const CurrentRunStatusPanel = (props: CurrentRunProps) => {
     const classes = useRunStatusPanelStyles();
     const { currentRun } = props;
 
-    const remainingEquilibrationTime: number = 0;
-    const remainingSetpointHoldTime: number = 0;
-    // const remainingEquilibrationTime: number =
-    //     (currentRunStatus.equilibrationStartTime &&
-    //         Date.now() - currentRunStatus.equilibrationStartTime) ||
-    //     NaN;
-    // const remainingSetpointHoldTime: number =
-    //     (currentRunStatus.setpointStartTime && Date.now() - currentRunStatus.setpointStartTime) ||
-    //     NaN;
+    const remainingEquilibrationTime: number = currentRun && Date.now() - currentRun.startTime;
+    const remainingSetpointHoldTime: number = 0 || NaN;
 
     return (
         <div className={classes.root}>

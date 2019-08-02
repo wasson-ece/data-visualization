@@ -14,39 +14,67 @@ import DioView from './DioView';
 import EpcView from './EpcView';
 import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
-import { Point } from 'electron';
 import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollection';
 import Heater from '../../interfaces/Heater';
 import { addHeaterDatum, updateHeaterAttributes, HeaterStateAttribute } from '../actions/heater';
+import HeaterState from '../../interfaces/HeaterState';
+import Run from '../../interfaces/Run';
+import HeaterDatum from '../../interfaces/HeaterDatum';
+import {
+    findActiveRun,
+    areHeaterParamsWithinTolerance,
+    reconcileHeaterRunParams
+} from '../../util/heater-run';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
     setHeaterBoards: (detectors: Heater[]) => void;
-    updateHeaterBoards: (detectors: Heater[]) => void;
-    addHeaterDatum: (id: string, datum: Point) => void;
-    updateHeaterAttributes: (
+    updateHeater: (
         id: string,
-        values: {
-            [key in HeaterStateAttribute]?: any;
-        }
+        kp: number,
+        ki: number,
+        kd: number,
+        setpoint: number,
+        actual: number,
+        datum: HeaterDatum
     ) => void;
     toggleDataCollection: () => void;
-    heaters: Heater[];
+    heaters: HeaterState[];
     isCollectingData: boolean;
 }
 
 class Root extends React.Component<RootProps> {
     readData?: NodeJS.Timeout;
+    reconcileHeaterParameters?: NodeJS.Timeout;
+    RECONCILIATION_CHECK_TIMEOUT = 2000;
 
     constructor(props: RootProps) {
         super(props);
         this.fetchComponents();
+        this.reconcileHeaterParameters = setInterval(
+            this.reconciliationLoop,
+            this.RECONCILIATION_CHECK_TIMEOUT
+        );
     }
+
+    reconciliationLoop = () => {
+        console.log('in reconciliation loop');
+        let heaters = this.props.heaters;
+        heaters.forEach(heater => {
+            let activeRun: Run | undefined = findActiveRun(heater);
+            if (!activeRun) return;
+            console.log(activeRun);
+            if (!areHeaterParamsWithinTolerance(heater, activeRun))
+                reconcileHeaterRunParams(heater, activeRun);
+            else if (heater.currentRun !== activeRun.uuid)
+                updateHeaterAttributes(heater.id, { currentRun: activeRun.uuid });
+        });
+    };
 
     componentWillReceiveProps = (nextProps: RootProps) => {
         /* Turn on/off data collection based on store state */
         if (nextProps.isCollectingData && !this.readData)
-            this.readData = setInterval(this.refreshData, 200);
+            this.readData = setInterval(this.refreshData, 400);
         if (!nextProps.isCollectingData && this.readData) {
             clearInterval(this.readData);
             this.readData = undefined;
@@ -55,6 +83,7 @@ class Root extends React.Component<RootProps> {
 
     fetchComponents = async () => {
         await tiClient.connect();
+
         let heaters = await this.getData();
 
         this.props.setHeaterBoards(heaters);
@@ -62,18 +91,15 @@ class Root extends React.Component<RootProps> {
 
     refreshData = async () => {
         let heaters = await this.getData();
-        heaters.forEach(h =>
-            this.props.updateHeaterAttributes(h.id, {
-                kp: h.kp,
-                ki: h.ki,
-                kd: h.kd,
-                setpoint: h.setpoint,
-                actual: h.actual
-            })
-        );
-        heaters.forEach(heater =>
-            this.props.addHeaterDatum(heater.id, { x: Date.now(), y: heater.actual })
-        );
+        heaters.forEach(h => {
+            let heater = this.props.heaters.find(cur => cur.id === h.id);
+            let datum: HeaterDatum = {
+                x: Date.now(),
+                y: h.actual,
+                runId: (heater && heater.currentRun) || ''
+            };
+            this.props.updateHeater(h.id, h.kp, h.ki, h.kd, h.setpoint, h.actual, datum);
+        });
     };
 
     getData = async (): Promise<Heater[]> => {
@@ -133,13 +159,18 @@ class Root extends React.Component<RootProps> {
 
 const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) => ({
     setHeaterBoards: (heaters: Heater[]) => dispatch(setHeaters(heaters)),
-    updateHeaterAttributes: (
+    updateHeater: (
         id: string,
-        values: {
-            [key in HeaterStateAttribute]: any;
-        }
-    ) => dispatch(updateHeaterAttributes(id, values)),
-    addHeaterDatum: (id: string, point: Point) => dispatch(addHeaterDatum(id, point)),
+        kp: number,
+        ki: number,
+        kd: number,
+        setpoint: number,
+        actual: number,
+        datum: HeaterDatum
+    ) => {
+        dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual }));
+        dispatch(addHeaterDatum(id, datum));
+    },
     toggleDataCollection: () => dispatch(toggleDataCollection())
 });
 

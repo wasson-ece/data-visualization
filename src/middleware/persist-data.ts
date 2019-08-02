@@ -1,19 +1,18 @@
 import { Dispatch, Store } from 'redux';
 import { RootState, RootAction } from '../renderer/reducers';
+import HeaterDatum from '../interfaces/HeaterDatum';
 import Run from '../interfaces/Run';
-import RunStatus from '../interfaces/RunStatus';
-import { Point } from 'electron';
 
 /**
  * Takes all run state information and opaquely persists it somewhere
  */
 export interface PersistenceFunction {
-    (run: Run, runStatus: RunStatus, data: Point[]): Promise<void>;
+    (run: Run, data: HeaterDatum[]): Promise<void>;
 }
 
 export const shouldActionTriggerPersistence = (action: RootAction): boolean => {
     switch (action.type) {
-        case 'END_RUN':
+        case 'FINISH_CURRENT_RUN':
             return true;
         default:
             return false;
@@ -25,24 +24,12 @@ export const shouldActionTriggerPersistence = (action: RootAction): boolean => {
  * @param state Entire application state tree
  * @param runId UUID of the run
  */
-export const findAllRunData = (state: RootState, runId: string): [Run, RunStatus, Point[]] => {
-    let runStatus: RunStatus;
-    let run: Run;
-    let data: Point[];
-    for (let currentRunStatus of [
-        ...state.dataCollection.activeRuns,
-        ...state.dataCollection.finishedRuns
-    ]) {
-        if (currentRunStatus.runId === runId) {
-            runStatus = currentRunStatus;
-            let runIndex = state.heaterRuns[runStatus.ovenId].findIndex(r => r.uuid === runId);
-            run = state.heaterRuns[runStatus.ovenId][runIndex];
-            data = state.controllerData.heaters[runStatus.ovenId];
-            return [run, runStatus, data];
-        }
-    }
-
-    throw new Error(`Unable to find run with id ${runId}`);
+export const findRunData = (state: RootState, heaterId: string): [Run, HeaterDatum[]] => {
+    let run = state.heaters[heaterId as any].runs.find(r => r.isRunning);
+    if (run)
+        //@ts-ignore HURP DERP I'M TYPESCRIPT AND I CAN'T PROPERLY REASON ABOUT NULL REFERENCES
+        return [run, state.heaters[heaterId as any].data.filter(datum => datum.runId === run.uuid)];
+    else throw new Error(`Unable to find current run data on heater ${heaterId}`);
 };
 
 /**
@@ -55,9 +42,9 @@ const persistDataMiddlewareCreator = (persistenceFn: PersistenceFunction) => (
 ) => (next: Dispatch<RootAction>) => (action: RootAction) => {
     if (!shouldActionTriggerPersistence(action)) return next(action);
 
-    if (action.type === 'END_RUN') {
-        const [run, runStatus, data] = findAllRunData(store.getState(), action.runId);
-        persistenceFn(run, runStatus, data);
+    if (action.type === 'FINISH_CURRENT_RUN') {
+        const [heater, data] = findRunData(store.getState(), action.id);
+        persistenceFn(heater, data);
     }
 
     return next(action);

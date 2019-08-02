@@ -9,4 +9,7 @@ export default interface Run {
     setpointHoldTime?: string;
     startTime: number;
     isFinished: boolean;
+    isRunning: boolean;
+    isEquilibrating: boolean;
+    isHoldingSetpoint: boolean;
 }

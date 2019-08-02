@@ -23,15 +23,13 @@ export const heater: Reducer<HeaterState, HeaterAction> = (
     state = defaultHeaterState,
     action: HeaterAction
 ) => {
+    if (action.id !== state.id) return state;
     switch (action.type) {
         case 'ADD_HEATER_DATUM':
-            if (action.id != state.id) return state;
             return { ...state, data: [...state.data, action.datum] };
         case 'CLEAR_HEATER_DATA':
-            if (action.id != state.id) return state;
             return { ...state, data: [] };
         case 'EDIT_HEATER_RUN': {
-            if (action.id !== state.id) return state;
             let runs = [
                 ...state.runs.slice(0, action.index),
                 run(state.runs[action.index], action),
@@ -45,17 +43,53 @@ export const heater: Reducer<HeaterState, HeaterAction> = (
             };
         }
         case 'DELETE_RUN': {
-            if (action.id !== state.id) return state;
             let runs = state.runs.filter((run, index) => index !== action.index);
-            let appendedRows = !runs.length ? [deepCopy(defaultRunState)] : [];
+            let appendedRows =
+                !runs.length || isRunValid(runs[runs.length - 1])
+                    ? [deepCopy(defaultRunState)]
+                    : [];
             return {
                 ...state,
                 runs: [...runs, ...appendedRows]
             };
         }
         case 'UPDATE_HEATER_ATTRIBUTES':
-            if (action.id != state.id) return state;
             return { ...state, ...action.values };
+        case 'ABORT_CURRENT_RUN':
+            return {
+                ...state,
+                currentRun: undefined,
+                runs: state.runs.map(r => (r.isRunning ? run(r, action) : r))
+            };
+        case 'FINISH_CURRENT_RUN':
+            return {
+                ...state,
+                currentRun: undefined,
+                runs: state.runs.map(r => (r.isRunning ? run(r, action) : r))
+            };
+        case 'START_NEXT_RUN':
+            return {
+                ...state,
+                runs: state.runs.map((r, index) =>
+                    isRunValid(r) && !r.isFinished && !r.isRunning ? run(r, action) : r
+                )
+            };
+        case 'ABORT_CURRENT_RUN':
+            return {
+                ...state,
+                currentRun: undefined,
+                runs: state.runs.map((r: Run, index) => (r.isRunning ? run(r, action) : r))
+            };
+        case 'START_SETPOINT_HOLD':
+            return {
+                ...state,
+                runs: state.runs.map((r: Run, index) => (r.isRunning ? run(r, action) : r))
+            };
+        case 'START_EQUILIBRATION':
+            return {
+                ...state,
+                runs: state.runs.map((r: Run, index) => (r.isRunning ? run(r, action) : r))
+            };
         default:
             return state;
     }

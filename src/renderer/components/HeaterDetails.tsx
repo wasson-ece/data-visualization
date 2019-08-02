@@ -4,7 +4,6 @@ import { TextField, InputAdornment, withStyles, Theme } from '@material-ui/core'
 import LineChart from './LineChart';
 import { tiClient } from '../../ti-communication/ti';
 import Command from 'node-ti/build/enums/command';
-import { Point } from 'electron';
 import HeaterState from '../../interfaces/HeaterState';
 
 interface HeaterDetailsProps {
@@ -12,9 +11,7 @@ interface HeaterDetailsProps {
     classes: any;
 }
 
-interface HeaterDetailsState {
-    // selectedHeater?: string;
-}
+interface HeaterDetailsState {}
 
 class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsState> {
     constructor(props: HeaterDetailsProps) {
