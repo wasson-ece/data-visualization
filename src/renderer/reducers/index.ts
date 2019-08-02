@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import { DataCollectionState } from './dataCollection';
 import { DataCollectionAction } from '../actions/dataCollection';
-import { dataCollection } from '../reducers/dataCollection';
+import { dataCollection } from './dataCollection';
 import HeaterState from '../../interfaces/HeaterState';
 import { heaters } from './heaters';
 import { HeatersAction } from '../actions/heaters';

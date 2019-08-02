@@ -9,8 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import Run from '../../interfaces/Run';
 import HeaterRunRow from './HeaterRunRow';
 import { Button, Toolbar, TextField, FormLabel } from '@material-ui/core';
-import { isRunValid } from '../reducers/runs';
-import RunStatus from '../../interfaces/RunStatus';
+import { isRunValid } from '../reducers/run';
 
 const hasValidRun = (runs: Run[]): boolean => runs.some(run => isRunValid(run));
 
@@ -61,20 +60,21 @@ const useRunStatusPanelStyles = makeStyles((theme: Theme) =>
 
 export interface CurrentRunProps {
     currentRun: Run;
-    currentRunStatus: RunStatus;
 }
 
 export const CurrentRunStatusPanel = (props: CurrentRunProps) => {
     const classes = useRunStatusPanelStyles();
-    const { currentRun, currentRunStatus } = props;
+    const { currentRun } = props;
 
-    const remainingEquilibrationTime: number =
-        (currentRunStatus.equilibrationStartTime &&
-            Date.now() - currentRunStatus.equilibrationStartTime) ||
-        NaN;
-    const remainingSetpointHoldTime: number =
-        (currentRunStatus.setpointStartTime && Date.now() - currentRunStatus.setpointStartTime) ||
-        NaN;
+    const remainingEquilibrationTime: number = 0;
+    const remainingSetpointHoldTime: number = 0;
+    // const remainingEquilibrationTime: number =
+    //     (currentRunStatus.equilibrationStartTime &&
+    //         Date.now() - currentRunStatus.equilibrationStartTime) ||
+    //     NaN;
+    // const remainingSetpointHoldTime: number =
+    //     (currentRunStatus.setpointStartTime && Date.now() - currentRunStatus.setpointStartTime) ||
+    //     NaN;
 
     return (
         <div className={classes.root}>
@@ -119,7 +119,6 @@ export interface RunTableProps {
     id: string;
     runs: Run[];
     currentRun?: Run;
-    currentRunStatus?: RunStatus;
     onStartRuns: () => void;
     onStopRuns: () => void;
 }
@@ -127,23 +126,18 @@ export interface RunTableProps {
 export default function RunTable(props: RunTableProps) {
     const classes = useStyles();
 
-    const { runs, id, currentRun, currentRunStatus, onStopRuns, onStartRuns } = props;
+    const { runs, id, currentRun, onStopRuns, onStartRuns } = props;
 
     return (
         <Paper className={classes.root}>
             <Toolbar className={classes.statusContainer}>
-                {currentRun && currentRunStatus && (
-                    <CurrentRunStatusPanel
-                        currentRun={currentRun}
-                        currentRunStatus={currentRunStatus}
-                    />
-                )}
+                {currentRun && <CurrentRunStatusPanel currentRun={currentRun} />}
                 <div className={classes.startRunBtnContainer}>
                     <Button
                         disabled={!hasValidRun(runs)}
                         variant="outlined"
                         color="primary"
-                        onClick={currentRun ? handleStopRuns : handleStartRuns}
+                        onClick={currentRun ? onStopRuns : onStartRuns}
                     >
                         {currentRun ? 'Stop' : 'Start'} Runs
                     </Button>

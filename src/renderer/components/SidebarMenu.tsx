@@ -12,7 +12,7 @@ import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
-import Heater from '../../ti-components/controllers/Heater';
+import HeaterState from '../../interfaces/HeaterState';
 
 const drawerWidth = 260;
 
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface SidebarMenuProps extends RouteComponentProps {
     isCollectingData: boolean;
-    heaters: Heater[];
+    heaters: HeaterState[];
     onToggleDataCollection: () => void;
 }
 

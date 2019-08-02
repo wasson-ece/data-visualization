@@ -5,9 +5,8 @@ import HeaterComponent from 'node-ti/build/ti-components/heater-component';
 import { withStyles } from '@material-ui/core';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ControllersAction, updateControllers, addHeaterDatum } from '../actions/heaters';
-import ControllerType from '../../enums/ControllerType';
-import { RootState } from '../reducers/root';
+import { setHeaters, HeatersAction } from '../actions/heaters';
+import { RootState } from '../reducers';
 import { withRouter, Route, RouteComponentProps } from 'react-router-dom';
 import HeaterView from './HeaterView';
 import { ControllerSidebarItem } from '../../enums/SidebarItems';
@@ -18,12 +17,19 @@ import { tiClient } from '../../ti-communication/ti';
 import { Point } from 'electron';
 import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollection';
 import Heater from '../../interfaces/Heater';
+import { addHeaterDatum, updateHeaterAttributes, HeaterStateAttribute } from '../actions/heater';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
     setHeaterBoards: (detectors: Heater[]) => void;
     updateHeaterBoards: (detectors: Heater[]) => void;
     addHeaterDatum: (id: string, datum: Point) => void;
+    updateHeaterAttributes: (
+        id: string,
+        values: {
+            [key in HeaterStateAttribute]?: any;
+        }
+    ) => void;
     toggleDataCollection: () => void;
     heaters: Heater[];
     isCollectingData: boolean;
@@ -56,7 +62,15 @@ class Root extends React.Component<RootProps> {
 
     refreshData = async () => {
         let heaters = await this.getData();
-        this.props.setHeaterBoards(heaters);
+        heaters.forEach(h =>
+            this.props.updateHeaterAttributes(h.id, {
+                kp: h.kp,
+                ki: h.ki,
+                kd: h.kd,
+                setpoint: h.setpoint,
+                actual: h.actual
+            })
+        );
         heaters.forEach(heater =>
             this.props.addHeaterDatum(heater.id, { x: Date.now(), y: heater.actual })
         );
@@ -117,17 +131,20 @@ class Root extends React.Component<RootProps> {
     };
 }
 
-const mapDispatch = (dispatch: Dispatch<ControllersAction | DataCollectionAction>) => ({
-    setHeaterBoards: (controllers: Heater[]) =>
-        dispatch({ type: 'SET_CONTROLLERS', controllerType: ControllerType.Heater, controllers }),
-    updateHeaterBoards: (controllers: Heater[]) =>
-        dispatch(updateControllers(ControllerType.Heater, controllers)),
+const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) => ({
+    setHeaterBoards: (heaters: Heater[]) => dispatch(setHeaters(heaters)),
+    updateHeaterAttributes: (
+        id: string,
+        values: {
+            [key in HeaterStateAttribute]: any;
+        }
+    ) => dispatch(updateHeaterAttributes(id, values)),
     addHeaterDatum: (id: string, point: Point) => dispatch(addHeaterDatum(id, point)),
     toggleDataCollection: () => dispatch(toggleDataCollection())
 });
 
 const mapState = (state: RootState) => ({
-    heaters: state.controllers.heaters,
+    heaters: state.heaters,
     isCollectingData: state.dataCollection.isCollectingData
 });
 
@@ -143,5 +160,4 @@ const styles = {
 export default connect(
     mapState,
     mapDispatch
-    //@ts-ignore
 )(withStyles(styles)(withRouter(Root)));

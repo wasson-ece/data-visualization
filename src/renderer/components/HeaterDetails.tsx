@@ -1,16 +1,15 @@
 import * as React from 'react';
-import Heater from '../../ti-components/controllers/Heater';
 import ParameterControl from './ParameterControl';
 import { TextField, InputAdornment, withStyles, Theme } from '@material-ui/core';
 import LineChart from './LineChart';
 import { tiClient } from '../../ti-communication/ti';
 import Command from 'node-ti/build/enums/command';
 import { Point } from 'electron';
+import HeaterState from '../../interfaces/HeaterState';
 
 interface HeaterDetailsProps {
-    heater: Heater;
+    heater: HeaterState;
     classes: any;
-    data: Point[];
 }
 
 interface HeaterDetailsState {
@@ -39,7 +38,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
     };
 
     render = () => {
-        const { heater, classes, data } = this.props;
+        const { heater, classes } = this.props;
         return (
             <div className={classes.root}>
                 <div className={classes.readings}>
@@ -76,25 +75,25 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                 <div className={classes.pidTune}>
                     <ParameterControl
                         title="Kp"
-                        current={heater.kP}
+                        current={heater.kp}
                         units=""
                         onChangeSetpoint={this.handleSendKpParameter}
                     />
                     <ParameterControl
                         title="Ki"
-                        current={heater.kI}
+                        current={heater.ki}
                         units=""
                         onChangeSetpoint={this.handleSendKiParameter}
                     />
                     <ParameterControl
                         title="Kd"
-                        current={heater.kD}
+                        current={heater.kd}
                         units=""
                         onChangeSetpoint={this.handleSendKdParameter}
                     />
                 </div>
                 <div>
-                    <LineChart height={500} data={data} setpoint={heater.setpoint} />
+                    <LineChart height={500} data={heater.data} setpoint={heater.setpoint} />
                 </div>
             </div>
         );

@@ -1,6 +1,7 @@
 import { Action, ActionCreator } from 'redux';
 import HeaterDatum from '../../interfaces/HeaterDatum';
 import HeaterState from '../../interfaces/HeaterState';
+import { RunAction } from './run';
 
 export type HeaterStateAttribute = keyof HeaterState;
 
@@ -23,7 +24,7 @@ export interface ClearHeaterData extends Action {
     id: string;
 }
 
-export type HeaterAction = UpdateHeaterAttributes | AddHeaterDatum | ClearHeaterData;
+export type HeaterAction = UpdateHeaterAttributes | AddHeaterDatum | ClearHeaterData | RunAction;
 
 export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum: HeaterDatum) => ({
     type: 'ADD_HEATER_DATUM',

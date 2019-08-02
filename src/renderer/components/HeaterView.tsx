@@ -1,15 +1,14 @@
 import * as React from 'react';
-import TabMenu from './TabMenu';
-import Heater from '../../ti-components/controllers/Heater';
-import { RootState } from '../reducers/root';
+import { RootState } from '../reducers';
 import { connect } from 'react-redux';
 import HeaterDetails from './HeaterDetails';
-import { Point } from 'electron';
 import Run from '../../interfaces/Run';
 import RunTable from './RunTable';
 import { Theme, withStyles } from '@material-ui/core';
 import { RouteComponentProps } from 'react-router-dom';
-import { number } from 'prop-types';
+import HeaterState from '../../interfaces/HeaterState';
+import { defaultRunState } from '../reducers/run';
+import deepCopy from '../../util/deep-copy';
 const uuidv1 = require('uuid/v1');
 
 interface HeaterRouteProps {
@@ -17,13 +16,7 @@ interface HeaterRouteProps {
 }
 
 interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
-    heaters: Heater[];
-    heaterData: {
-        [heaterId: string]: Point[];
-    };
-    heaterRuns: {
-        [heaterIndex: string]: Run[];
-    };
+    heaters: HeaterState[];
     classes: any;
 }
 
@@ -43,7 +36,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
     handleAbortCurrentRun = () => {};
 
     handleStartNextRun = (run: Run) => {
-        sendRunPIDParameters(Number());
+        // sendRunPIDParameters(Number());
     };
 
     handleEndCurrentRun = (run: Run) => {};
@@ -57,23 +50,17 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
     };
 
     render = () => {
-        const { heaters, heaterData, heaterRuns, classes } = this.props;
+        const { heaters, classes } = this.props;
         const id = this.props.match.params.id;
         const heater = heaters.find(h => h.id == id);
         return (
             <div className={classes.root}>
                 <div className={classes.details}>
-                    {heater && (
-                        <HeaterDetails
-                            heater={heater}
-                            key={heater.id}
-                            data={heaterData[heater.id]}
-                        />
-                    )}
+                    {heater && <HeaterDetails heater={heater} key={heater.id} />}
                     {heater && (
                         <RunTable
                             id={id}
-                            runs={heaterRuns[id] || [{ uuid: uuidv1(), isFinished: false }]}
+                            runs={heater.runs}
                             currentRun={{
                                 uuid: 'abdc',
                                 baseline: '20',
@@ -83,14 +70,8 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                                 kp: '10',
                                 ki: '10',
                                 kd: '20',
-                                isFinished: false
-                            }}
-                            currentRunStatus={{
-                                runId: 'abdc',
-                                ovenId: '3',
-                                equilibrationStartTime: Date.now(),
-                                setpointStartTime: null,
-                                finishTime: null
+                                isFinished: false,
+                                startTime: 20
                             }}
                             onStartRuns={this.handleStartRuns}
                             onStopRuns={this.handleStopRuns}
@@ -103,9 +84,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
 }
 
 const mapState = (state: RootState) => ({
-    heaters: state.controllers.heaters,
-    heaterData: state.controllerData.heaters,
-    heaterRuns: state.heaterRuns
+    heaters: state.heaters
 });
 
 const styles = (theme: Theme) => ({

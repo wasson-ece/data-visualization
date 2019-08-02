@@ -13,7 +13,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import Run from '../../interfaces/Run';
-import { deleteRun, editRun } from '../actions/runs';
+import { deleteRun, editRunAttributes } from '../actions/run';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -157,7 +157,7 @@ function HeaterRunRow(props: RunRowProps) {
 const mapDispatch = (dispatch: Dispatch) => ({
     deleteHeaterRunRow: (heaterId: string, index: number) => dispatch(deleteRun(heaterId, index)),
     editHeaterRunRow: (heaterId: string, index: number, attribute: string, value: string) =>
-        dispatch(editRun(heaterId, index, attribute, value))
+        dispatch(editRunAttributes(heaterId, index, { [attribute]: value }))
 });
 
 export default connect(
