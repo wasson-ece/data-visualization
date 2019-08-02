@@ -1,9 +1,12 @@
 import { combineReducers } from 'redux';
 
-import { DataCollectionState } from './dataCollectionReducer';
-import { DataCollectionAction } from '../actions/dataCollectionActions';
+import { DataCollectionState } from './dataCollection';
+import { DataCollectionAction } from '../actions/dataCollection';
+import { dataCollection } from '../reducers/dataCollection';
 import HeaterState from '../../interfaces/HeaterState';
 import { heaters } from './heaters';
+import { HeatersAction } from '../actions/heaters';
+import { HeaterAction } from '../actions/heater';
 
 export interface RootState {
     heaters: HeaterState[];
@@ -15,4 +18,4 @@ export const rootReducer = combineReducers<RootState | undefined>({
     dataCollection
 });
 
-export type RootAction = ControllersAction | DataCollectionAction;
+export type RootAction = HeatersAction | DataCollectionAction | HeaterAction;

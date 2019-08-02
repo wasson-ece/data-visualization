@@ -1,5 +1,3 @@
-import { Point } from 'electron';
-
 export default interface Run {
     uuid: string;
     kp?: string;

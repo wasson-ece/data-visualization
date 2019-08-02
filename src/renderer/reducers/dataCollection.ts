@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { DataCollectionAction } from '../actions/dataCollectionActions';
+import { DataCollectionAction } from '../actions/dataCollection';
 
 export interface DataCollectionState {
     isCollectingData: boolean;
@@ -9,7 +9,7 @@ const defaultState: DataCollectionState = {
     isCollectingData: false
 };
 
-export const dataCollectionReducer: Reducer<DataCollectionState, DataCollectionAction> = (
+export const dataCollection: Reducer<DataCollectionState, DataCollectionAction> = (
     state = defaultState,
     action: DataCollectionAction
 ): DataCollectionState => {

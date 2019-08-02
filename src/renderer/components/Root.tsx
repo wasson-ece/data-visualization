@@ -16,7 +16,7 @@ import EpcView from './EpcView';
 import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
 import { Point } from 'electron';
-import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollectionActions';
+import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollection';
 import Heater from '../../interfaces/Heater';
 
 interface RootProps extends RouteComponentProps {
