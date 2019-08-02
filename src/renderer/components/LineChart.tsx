@@ -1,182 +1,96 @@
 import * as React from 'react';
 // @ts-ignore
-import { curveCatmullRom } from 'd3-shape';
 import {
     FlexibleWidthXYPlot,
     XAxis,
     YAxis,
-    ChartLabel,
     HorizontalGridLines,
-    VerticalGridLines,
-    LineSeries,
     LineSeriesCanvas,
     Highlight
     // @ts-ignore
 } from 'react-vis';
-import {
-    withStyles,
-    Theme,
-    Button,
-    Paper,
-    TableFooter,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Table,
-    Typography
-} from '@material-ui/core';
+import { withStyles, Theme } from '@material-ui/core';
+import { Point } from 'electron';
+import { theme } from '../../style/theme';
 require('react-vis/dist/style.css');
 
-function generateSeededRandom(baseSeed = 2): Function {
-    let seed = baseSeed;
-    return function seededRandom(max: number, min: number) {
-        max = max || 1;
-        min = min || 0;
-
-        seed = (seed * 9301 + 49297) % 233280;
-        const rnd = seed / 233280;
-
-        return min + rnd * (max - min);
-    };
+interface LineChartProps {
+    data: Point[];
+    classes: any;
+    height?: number;
+    setpoint?: number;
 }
 
-const seededRandom = generateSeededRandom(9);
-const totalValues = 30000;
+interface LineChartState {
+    drawBounds?: DrawBounds;
+    area?: number;
+}
 
-/**
- * Get the array of x and y pairs.
- * The function tries to avoid too large changes of the chart.
- * @param {number} total Total number of values.
- * @returns {Array} Array of data.
- * @private
- */
-function getRandomSeriesData(total: number) {
-    const result = [];
-    let lastY = seededRandom() * 40 - 20;
-    let y;
-    const firstY = lastY;
-    for (let i = 0; i < total; i++) {
-        y = seededRandom() * firstY - firstY / 2 + lastY;
-        result.push({
-            x: i,
-            y
-        });
-        lastY = y;
+interface DrawBounds {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+}
+
+class LineChart extends React.Component<LineChartProps, LineChartState> {
+    constructor(props: LineChartProps) {
+        super(props);
+        this.state = {};
     }
-    return result;
-}
 
-class ZoomableChartExample extends React.Component {
-    state = {
-        lastDrawLocation: null,
-        series: [
-            {
-                data: getRandomSeriesData(totalValues),
-                disabled: false,
-                title: 'Apples'
-            }
-        ]
-    };
+    DEFAULT_HEIGHT = 300;
 
     render() {
-        const { series, lastDrawLocation } = this.state;
-        //@ts-ignore
-        const { classes } = this.props;
+        const { data, classes, height, setpoint } = this.props;
+        const { drawBounds, area } = this.state;
+        const setpointLine =
+            (setpoint &&
+                data &&
+                data.length > 1 && [
+                    { x: data[0].x, y: setpoint },
+                    { x: data[data.length - 1].x, y: setpoint }
+                ]) ||
+            null;
+
         return (
             <div className={classes.root}>
                 <FlexibleWidthXYPlot
-                    animation
-                    xDomain={
-                        //@ts-ignore
-                        lastDrawLocation && [lastDrawLocation.left, lastDrawLocation.right]
-                    }
-                    yDomain={
-                        //@ts-ignore
-                        lastDrawLocation && [lastDrawLocation.bottom, lastDrawLocation.top]
-                    }
-                    height={300}
+                    xDomain={drawBounds && [drawBounds.left, drawBounds.right]}
+                    yDomain={drawBounds && [drawBounds.bottom, drawBounds.top]}
+                    height={height || this.DEFAULT_HEIGHT}
                 >
                     <HorizontalGridLines />
-
                     <YAxis />
                     <XAxis />
-
-                    {series.map(entry => (
-                        <LineSeriesCanvas key={entry.title} data={entry.data} />
-                    ))}
-
+                    <LineSeriesCanvas data={data} color={theme.palette.primary.main} />
+                    {setpoint && setpointLine && (
+                        <LineSeriesCanvas
+                            data={setpointLine}
+                            color={theme.palette.secondary.main}
+                        />
+                    )}
                     <Highlight
-                        onBrushEnd={(area: number) => this.setState({ lastDrawLocation: area })}
-                        onDrag={(area: number) => {
+                        onBrushEnd={(nextDrawBounds: DrawBounds) => {
+                            this.setState({ drawBounds: nextDrawBounds });
+                        }}
+                        onDrag={(nextDrawArea: DrawBounds) => {
+                            let dy = nextDrawArea.top - nextDrawArea.bottom;
+                            let dx = nextDrawArea.right - nextDrawArea.left;
                             this.setState({
-                                lastDrawLocation: {
-                                    // @ts-ignore
-                                    bottom: lastDrawLocation.bottom + (area.top - area.bottom),
-                                    // @ts-ignore
-                                    left: lastDrawLocation.left - (area.right - area.left),
-                                    // @ts-ignore
-                                    right: lastDrawLocation.right - (area.right - area.left),
-                                    // @ts-ignore
-                                    top: lastDrawLocation.top + (area.top - area.bottom)
+                                drawBounds: {
+                                    bottom:
+                                        (drawBounds && drawBounds.bottom + dy) ||
+                                        nextDrawArea.bottom,
+                                    top: (drawBounds && drawBounds.top + dy) || nextDrawArea.top,
+                                    left: (drawBounds && drawBounds.left - dx) || nextDrawArea.left,
+                                    right:
+                                        (drawBounds && drawBounds.right - dy) || nextDrawArea.right
                                 }
                             });
                         }}
                     />
                 </FlexibleWidthXYPlot>
-                <Button
-                    className={classes.resetButton}
-                    onClick={() => this.setState({ lastDrawLocation: null })}
-                    color="secondary"
-                    variant="contained"
-                >
-                    Reset Zoom
-                </Button>
-                <Paper className={classes.tableRoot}>
-                    <Typography className={classes.title} variant="h5">
-                        Last Zoom Attributes
-                    </Typography>
-                    <Table className={classes.table}>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell component="th" scope="row">
-                                    Top
-                                </TableCell>
-                                <TableCell align="right">
-                                    {//@ts-ignore
-                                    lastDrawLocation && lastDrawLocation.top}
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell component="th" scope="row">
-                                    Right
-                                </TableCell>
-                                <TableCell align="right">
-                                    {//@ts-ignore
-                                    lastDrawLocation && lastDrawLocation.right}
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell component="th" scope="row">
-                                    Bottom
-                                </TableCell>
-                                <TableCell align="right">
-                                    {//@ts-ignore
-                                    lastDrawLocation && lastDrawLocation.bottom}
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell component="th" scope="row">
-                                    Left
-                                </TableCell>
-                                <TableCell align="right">
-                                    {//@ts-ignore
-                                    lastDrawLocation && lastDrawLocation.left}
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </Paper>
             </div>
         );
     }
@@ -184,20 +98,9 @@ class ZoomableChartExample extends React.Component {
 
 const styles = (theme: Theme) => ({
     root: {
-        height: '100%',
-        padding: 16,
-        display: 'grid'
+        width: '100%'
     },
-    tableRoot: {
-        marginTop: theme.spacing(3),
-        overflowX: 'auto' as 'auto',
-        width: 650,
-        margin: '0 auto'
-    },
-    table: {},
-    title: {
-        margin: 16
-    }
+    title: {}
 });
 
-export default withStyles(styles)(ZoomableChartExample);
+export default withStyles(styles)(LineChart);

@@ -1,11 +1,21 @@
 import { combineReducers } from 'redux';
 
-import { CounterState, counterReducer } from './counterReducer';
+import { DataCollectionState } from './dataCollection';
+import { DataCollectionAction } from '../actions/dataCollection';
+import { dataCollection } from './dataCollection';
+import HeaterState from '../../interfaces/HeaterState';
+import { heaters } from './heaters';
+import { HeatersAction } from '../actions/heaters';
+import { HeaterAction } from '../actions/heater';
 
 export interface RootState {
-    counter: CounterState;
+    heaters: HeaterState[];
+    dataCollection: DataCollectionState;
 }
 
 export const rootReducer = combineReducers<RootState | undefined>({
-    counter: counterReducer
+    heaters,
+    dataCollection
 });
+
+export type RootAction = HeatersAction | DataCollectionAction | HeaterAction;

@@ -19,8 +19,9 @@ const createWindow = async () => {
         await installExtensions();
     }
 
-    win = new BrowserWindow({ width: 800, height: 600 });
-    win.setTitle('Data Visualizer');
+    win = new BrowserWindow();
+    win.maximize();
+    win.setTitle('Cooling Oven');
 
     if (process.env.NODE_ENV !== 'production') {
         process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = '1';
@@ -38,7 +39,7 @@ const createWindow = async () => {
     if (process.env.NODE_ENV !== 'production') {
         // Open DevTools, see https://github.com/electron/electron/issues/12438 for why we wait for dom-ready
         win.webContents.once('dom-ready', () => {
-            win!.webContents.openDevTools();
+            // win!.webContents.openDevTools();
         });
     }
 
