@@ -1,21 +1,21 @@
-import Heater from '../../interfaces/Heater';
 import { Action, ActionCreator } from 'redux';
-import { Point } from 'electron';
+import HeaterDatum from '../../interfaces/HeaterDatum';
+import HeaterState from '../../interfaces/HeaterState';
 
-export type HeaterAttribute = keyof Heater;
+export type HeaterStateAttribute = keyof HeaterState;
 
 export interface UpdateHeaterAttributes extends Action {
     type: 'UPDATE_HEATER_ATTRIBUTES';
     id: string;
     values: {
-        [key in HeaterAttribute]: any;
+        [key in HeaterStateAttribute]: any;
     };
 }
 
 export interface AddHeaterDatum extends Action {
     type: 'ADD_HEATER_DATUM';
     id: string;
-    datum: Point;
+    datum: HeaterDatum;
 }
 
 export interface ClearHeaterData extends Action {
@@ -25,7 +25,7 @@ export interface ClearHeaterData extends Action {
 
 export type HeaterAction = UpdateHeaterAttributes | AddHeaterDatum | ClearHeaterData;
 
-export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum: Point) => ({
+export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum: HeaterDatum) => ({
     type: 'ADD_HEATER_DATUM',
     id,
     datum
@@ -39,7 +39,7 @@ export const clearHeaterData: ActionCreator<ClearHeaterData> = (ovenId: string) 
 export const updateHeaterAttributes: ActionCreator<UpdateHeaterAttributes> = (
     id: string,
     values: {
-        [key in HeaterAttribute]: any;
+        [key in HeaterStateAttribute]: any;
     }
 ) => ({
     type: 'UPDATE_HEATER_ATTRIBUTES',
