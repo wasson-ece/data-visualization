@@ -22,19 +22,20 @@ export const isRunValid = (run: Run): boolean =>
             Number(run.setpointHoldTime) > 0
     );
 
-export const defaultRunState: Run = {
+export const defaultRunState = (): Run => ({
     uuid: uuidv1(),
     isFinished: false,
     isRunning: false,
     isEquilibrating: false,
     isHoldingSetpoint: false,
-    startTime: NaN
-};
+    startTime: NaN,
+    isDirty: false
+});
 
-export const run: Reducer<Run, RunAction> = (state = defaultRunState, action: RunAction) => {
+export const run: Reducer<Run, RunAction> = (state = defaultRunState(), action: RunAction) => {
     switch (action.type) {
         case 'EDIT_HEATER_RUN':
-            return { ...state, ...action.values };
+            return { ...state, ...action.values, isDirty: true };
         case 'ABORT_CURRENT_RUN':
             return { ...state, isRunning: false, isEquilibrating: false, isHoldingSetpoint: false };
         case 'FINISH_CURRENT_RUN':
@@ -46,7 +47,8 @@ export const run: Reducer<Run, RunAction> = (state = defaultRunState, action: Ru
                 isHoldingSetpoint: false
             };
         case 'START_NEXT_RUN':
-            return { ...state, isRunning: true, startTime: Date.now(), isEquilibrating: true };
+            console.log('in run reducer');
+            return { ...state, isRunning: true, startTime: Date.now() };
         case 'START_SETPOINT_HOLD':
             return { ...state, isHoldingSetpoint: true, isEquilibrating: false };
         case 'START_EQUILIBRATION':

@@ -14,6 +14,7 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import Run from '../../interfaces/Run';
 import { deleteRun, editRunAttributes } from '../actions/run';
+import { isRunValid } from '../reducers/run';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -22,6 +23,12 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         running: {
             backgroundColor: 'rgb(89, 89, 89)'
+        },
+        finished: {
+            backgroundColor: '#3a443a'
+        },
+        invalid: {
+            backgroundColor: '#914a4a'
         }
     })
 );
@@ -61,8 +68,13 @@ function HeaterRunRow(props: RunRowProps) {
 
     const handleDeleteRow = () => deleteHeaterRunRow(heaterId, runIndex);
 
+    let className = undefined;
+    if (run.isRunning) className = classes.running;
+    if (run.isFinished) className = classes.finished;
+    if (run.isDirty && !isRunValid(run)) className = classes.invalid;
+
     return (
-        <TableRow className={(run.isRunning && classes.running) || undefined}>
+        <TableRow className={className}>
             <TableCell>
                 <TextField value={run.kp || ''} onChange={handleChangeKpValue} placeholder="Kp" />
             </TableCell>

@@ -12,4 +12,5 @@ export default interface Run {
     isRunning: boolean;
     isEquilibrating: boolean;
     isHoldingSetpoint: boolean;
+    isDirty: boolean;
 }

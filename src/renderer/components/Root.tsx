@@ -16,7 +16,7 @@ import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
 import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollection';
 import Heater from '../../interfaces/Heater';
-import { addHeaterDatum, updateHeaterAttributes, HeaterStateAttribute } from '../actions/heater';
+import { addHeaterDatum, updateHeaterAttributes, clearHeaterData } from '../actions/heater';
 import HeaterState from '../../interfaces/HeaterState';
 import Run from '../../interfaces/Run';
 import HeaterDatum from '../../interfaces/HeaterDatum';
@@ -31,8 +31,12 @@ import {
     isDoneHoldingSetpoint,
     isReadyToStartRun
 } from '../../util/heater-timing';
-import { run } from '../reducers/run';
-import { startEquilibration } from '../actions/run';
+import {
+    startEquilibration,
+    startSetpointHold,
+    finishCurrentRun,
+    startNextRun
+} from '../actions/run';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -47,6 +51,11 @@ interface RootProps extends RouteComponentProps {
         datum: HeaterDatum
     ) => void;
     toggleDataCollection: () => void;
+    startOvenEquilibration: (ovenId: string) => void;
+    startOvenSetpointHold: (ovenId: string) => void;
+    finishOvenRun: (ovenId: string) => void;
+    startNextOvenRun: (id: string) => void;
+    clearRunData: (runId: string) => void;
     heaters: HeaterState[];
     isCollectingData: boolean;
 }
@@ -82,18 +91,35 @@ class Root extends React.Component<RootProps> {
     }
 
     reconciliationLoop = () => {
-        const { startEquilibration, startSetpointHold, finishRun } = this.props;
-        console.log('in reconciliation loop');
+        const {
+            startOvenEquilibration,
+            startOvenSetpointHold,
+            finishOvenRun,
+            startNextOvenRun,
+            clearRunData
+        } = this.props;
         let heaters = this.props.heaters;
         heaters.forEach(heater => {
             let activeRun: Run | undefined = findActiveRun(heater);
+            if (!activeRun) console.log('no active run');
             if (!activeRun) return;
-            if (!areHeaterParamsWithinTolerance(heater, activeRun))
+            if (!areHeaterParamsWithinTolerance(heater, activeRun)) {
+                console.log('params not right');
                 reconcileHeaterRunParams(heater, activeRun);
-            else {
-                if (isReadyToStartRun(activeRun)) startEquilibration(activeRun.uuid);
-                else if (isDoneEquilibrating(activeRun)) startSetpointHold(activeRun.uuid);
-                else if (isDoneHoldingSetpoint(activeRun)) finishRun(activeRun.uuid);
+            } else {
+                if (isReadyToStartRun(activeRun)) {
+                    console.log('ready to start');
+                    startOvenEquilibration(heater.id);
+                } else if (isDoneEquilibrating(activeRun)) {
+                    console.log('fin equilibrating');
+                    startOvenSetpointHold(heater.id);
+                } else if (isDoneHoldingSetpoint(activeRun)) {
+                    console.log('setpoint hold finished');
+                    finishOvenRun(heater.id);
+                    startNextOvenRun(heater.id);
+                    // Wait before clearing out previous run's data
+                    setTimeout(() => clearRunData(activeRun!.uuid), 5000);
+                }
             }
         });
     };
@@ -198,7 +224,12 @@ const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) =
         dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual }));
         dispatch(addHeaterDatum(id, datum));
     },
-    toggleDataCollection: () => dispatch(toggleDataCollection())
+    toggleDataCollection: () => dispatch(toggleDataCollection()),
+    startOvenEquilibration: (id: string) => dispatch(startEquilibration(id)),
+    startOvenSetpointHold: (id: string) => dispatch(startSetpointHold(id)),
+    finishOvenRun: (id: string) => dispatch(finishCurrentRun(id)),
+    startNextOvenRun: (id: string) => dispatch(startNextRun(id)),
+    clearRunData: (runId: string) => dispatch(clearHeaterData(/* No id clears all data */))
 });
 
 const mapState = (state: RootState) => ({

@@ -25,15 +25,10 @@ export const shouldActionTriggerPersistence = (action: RootAction): boolean => {
  * @param runId UUID of the run
  */
 export const findRunData = (state: RootState, heaterId: string): [string, Run, HeaterDatum[]] => {
-    let run = state.heaters[heaterId as any].runs.find(r => r.isRunning);
-    let id = state.heaters[heaterId as any].label;
-    if (run)
-        return [
-            id,
-            run,
-            //@ts-ignore HURP DERP I'M TYPESCRIPT AND I CAN'T PROPERLY REASON ABOUT NULL REFERENCES
-            state.heaters[heaterId as any].data.filter(datum => datum.runId === run.uuid)
-        ];
+    let heater = state.heaters.find(h => (h.id = heaterId));
+    let run = heater!.runs.find(r => r.isRunning);
+    let id = heater!.label;
+    if (run) return [id, run, heater!.data.filter(datum => datum.runId === run!.uuid)];
     else throw new Error(`Unable to find current run data on heater ${heaterId}`);
 };
 
@@ -50,6 +45,7 @@ const persistDataMiddlewareCreator = (persistenceFn: PersistenceFunction) => (
     if (action.type === 'FINISH_CURRENT_RUN') {
         let state = store.getState();
         const [id, heater, data] = findRunData(state, action.id);
+        console.log(data);
         persistenceFn(id || 'unlabelled', heater, data);
     }
 

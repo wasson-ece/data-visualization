@@ -47,14 +47,14 @@ const makeInfluxPoint = (id: string, run: Run, datum: HeaterDatum): Influx.IPoin
     measurement: 'heater',
     tags: { run: datum.runId },
     fields: {
-        setpoint: run.setpoint,
-        actual: datum.y,
-        kp: run.kp,
-        ki: run.ki,
-        kd: run.kd,
-        setpointHoldTime: run.setpointHoldTime,
+        setpoint: Number(run.setpoint),
+        actual: Number(datum.y),
+        kp: Number(run.kp),
+        ki: Number(run.ki),
+        kd: Number(run.kd),
+        setpointHoldTime: 1e6 * Number(run.setpointHoldTime),
         instrumentId: id,
-        timestamp: 1e6 * datum.x // Influx time is in ns, not ms
+        timestamp: 1e6 * Number(datum.x) // Influx time is in ns, not ms
     }
 });
 
