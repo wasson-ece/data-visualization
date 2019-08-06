@@ -25,6 +25,7 @@ import {
     areHeaterParamsWithinTolerance,
     reconcileHeaterRunParams
 } from '../../util/heater-run';
+import influxDataPersistence from '../../db/influx-data-persistence';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -54,6 +55,22 @@ class Root extends React.Component<RootProps> {
         this.reconcileHeaterParameters = setInterval(
             this.reconciliationLoop,
             this.RECONCILIATION_CHECK_TIMEOUT
+        );
+
+        influxDataPersistence(
+            'foo_heater',
+            {
+                uuid: 'TEST',
+                startTime: Date.now(),
+                isFinished: true,
+                isEquilibrating: false,
+                isHoldingSetpoint: false,
+                isRunning: false,
+                ki: '10',
+                kp: '10',
+                kd: '10'
+            },
+            [{ x: Date.now(), y: 50.2, runId: 'TEST' }]
         );
     }
 

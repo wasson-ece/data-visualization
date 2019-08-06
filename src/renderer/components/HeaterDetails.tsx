@@ -9,6 +9,7 @@ import HeaterState from '../../interfaces/HeaterState';
 interface HeaterDetailsProps {
     heater: HeaterState;
     classes: any;
+    onChangeLabel: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface HeaterDetailsState {}
@@ -35,7 +36,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
     };
 
     render = () => {
-        const { heater, classes } = this.props;
+        const { heater, classes, onChangeLabel } = this.props;
         return (
             <div className={classes.root}>
                 <div className={classes.readings}>
@@ -88,6 +89,9 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                         units=""
                         onChangeSetpoint={this.handleSendKdParameter}
                     />
+                </div>
+                <div className={classes.metaData}>
+                    <TextField label="Identifier" value={heater.label} onChange={onChangeLabel} />
                 </div>
                 <div>
                     <LineChart height={500} data={heater.data} setpoint={heater.setpoint} />

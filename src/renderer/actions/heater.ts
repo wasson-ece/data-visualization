@@ -22,6 +22,7 @@ export interface AddHeaterDatum extends Action {
 export interface ClearHeaterData extends Action {
     type: 'CLEAR_HEATER_DATA';
     id: string;
+    runId: string;
 }
 
 export type HeaterAction = UpdateHeaterAttributes | AddHeaterDatum | ClearHeaterData | RunAction;
@@ -32,9 +33,10 @@ export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum:
     datum
 });
 
-export const clearHeaterData: ActionCreator<ClearHeaterData> = (ovenId: string) => ({
+export const clearHeaterData: ActionCreator<ClearHeaterData> = (ovenId: string, runId = '') => ({
     type: 'CLEAR_HEATER_DATA',
-    id: ovenId
+    id: ovenId,
+    runId
 });
 
 export const updateHeaterAttributes: ActionCreator<UpdateHeaterAttributes> = (

@@ -7,7 +7,7 @@ import Run from '../interfaces/Run';
  * Takes all run state information and opaquely persists it somewhere
  */
 export interface PersistenceFunction {
-    (run: Run, data: HeaterDatum[]): Promise<void>;
+    (id: string, run: Run, data: HeaterDatum[]): Promise<void>;
 }
 
 export const shouldActionTriggerPersistence = (action: RootAction): boolean => {
@@ -24,11 +24,16 @@ export const shouldActionTriggerPersistence = (action: RootAction): boolean => {
  * @param state Entire application state tree
  * @param runId UUID of the run
  */
-export const findRunData = (state: RootState, heaterId: string): [Run, HeaterDatum[]] => {
+export const findRunData = (state: RootState, heaterId: string): [string, Run, HeaterDatum[]] => {
     let run = state.heaters[heaterId as any].runs.find(r => r.isRunning);
+    let id = state.heaters[heaterId as any].label;
     if (run)
-        //@ts-ignore HURP DERP I'M TYPESCRIPT AND I CAN'T PROPERLY REASON ABOUT NULL REFERENCES
-        return [run, state.heaters[heaterId as any].data.filter(datum => datum.runId === run.uuid)];
+        return [
+            id,
+            run,
+            //@ts-ignore HURP DERP I'M TYPESCRIPT AND I CAN'T PROPERLY REASON ABOUT NULL REFERENCES
+            state.heaters[heaterId as any].data.filter(datum => datum.runId === run.uuid)
+        ];
     else throw new Error(`Unable to find current run data on heater ${heaterId}`);
 };
 
@@ -43,8 +48,9 @@ const persistDataMiddlewareCreator = (persistenceFn: PersistenceFunction) => (
     if (!shouldActionTriggerPersistence(action)) return next(action);
 
     if (action.type === 'FINISH_CURRENT_RUN') {
-        const [heater, data] = findRunData(store.getState(), action.id);
-        persistenceFn(heater, data);
+        let state = store.getState();
+        const [id, heater, data] = findRunData(state, action.id);
+        persistenceFn(id || 'unlabelled', heater, data);
     }
 
     return next(action);
