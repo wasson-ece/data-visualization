@@ -26,6 +26,13 @@ import {
     reconcileHeaterRunParams
 } from '../../util/heater-run';
 import influxDataPersistence from '../../db/influx-data-persistence';
+import {
+    isDoneEquilibrating,
+    isDoneHoldingSetpoint,
+    isReadyToStartRun
+} from '../../util/heater-timing';
+import { run } from '../reducers/run';
+import { startEquilibration } from '../actions/run';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -75,16 +82,19 @@ class Root extends React.Component<RootProps> {
     }
 
     reconciliationLoop = () => {
+        const { startEquilibration, startSetpointHold, finishRun } = this.props;
         console.log('in reconciliation loop');
         let heaters = this.props.heaters;
         heaters.forEach(heater => {
             let activeRun: Run | undefined = findActiveRun(heater);
             if (!activeRun) return;
-            console.log(activeRun);
             if (!areHeaterParamsWithinTolerance(heater, activeRun))
                 reconcileHeaterRunParams(heater, activeRun);
-            else if (heater.currentRun !== activeRun.uuid)
-                updateHeaterAttributes(heater.id, { currentRun: activeRun.uuid });
+            else {
+                if (isReadyToStartRun(activeRun)) startEquilibration(activeRun.uuid);
+                else if (isDoneEquilibrating(activeRun)) startSetpointHold(activeRun.uuid);
+                else if (isDoneHoldingSetpoint(activeRun)) finishRun(activeRun.uuid);
+            }
         });
     };
 

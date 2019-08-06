@@ -82,9 +82,11 @@ export const heater: Reducer<HeaterState, HeaterAction> = (
                 runs: state.runs.map((r: Run, index) => (r.isRunning ? run(r, action) : r))
             };
         case 'START_SETPOINT_HOLD':
+            let activeRun = state.runs.find(r => r.isRunning);
             return {
                 ...state,
-                runs: state.runs.map((r: Run, index) => (r.isRunning ? run(r, action) : r))
+                runs: state.runs.map((r: Run, index) => (r.isRunning ? run(r, action) : r)),
+                currentRun: (activeRun && activeRun.uuid) || ''
             };
         case 'START_EQUILIBRATION':
             return {
