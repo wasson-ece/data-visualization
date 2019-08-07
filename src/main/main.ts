@@ -19,7 +19,7 @@ const createWindow = async () => {
         await installExtensions();
     }
 
-    win = new BrowserWindow();
+    win = new BrowserWindow({ webPreferences: { preload: path.join(__dirname, 'sentry.js') } });
     win.maximize();
     win.setTitle('Cooling Oven');
 
