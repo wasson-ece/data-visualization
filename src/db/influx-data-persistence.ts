@@ -4,6 +4,8 @@ import Run from '../interfaces/Run';
 import HeaterDatum from '../interfaces/HeaterDatum';
 import influxEnv from '../env/influx.env';
 
+const MEASUREMENT_NAME = 'heater2';
+
 const influxDataPersistence: PersistenceFunction = async (
     id: string,
     run: Run,
@@ -18,9 +20,8 @@ const influxDataPersistence: PersistenceFunction = async (
         password,
         schema: [
             {
-                measurement: 'heater',
+                measurement: MEASUREMENT_NAME,
                 fields: {
-                    id: Influx.FieldType.STRING,
                     kp: Influx.FieldType.INTEGER,
                     ki: Influx.FieldType.INTEGER,
                     kd: Influx.FieldType.INTEGER,
@@ -29,16 +30,17 @@ const influxDataPersistence: PersistenceFunction = async (
                     timestamp: Influx.FieldType.INTEGER,
                     setpointHoldTime: Influx.FieldType.FLOAT
                 },
-                tags: ['run']
+                tags: ['run', 'instrumentId']
             }
         ]
     });
     influx.writePoints(data.map(datum => makeInfluxPoint(id, run, datum))).catch(console.log);
 };
 
-const makeInfluxPoint = (id: string, run: Run, datum: HeaterDatum): Influx.IPoint => ({
-    measurement: 'heater',
-    tags: { run: datum.runId },
+const makeInfluxPoint = (instrumentId: string, run: Run, datum: HeaterDatum): Influx.IPoint => ({
+    measurement: MEASUREMENT_NAME,
+    tags: { run: datum.runId, instrumentId },
+    timestamp: 1e6 * Number(datum.x), // Influx time is in ns, not ms
     fields: {
         setpoint: Number(run.setpoint),
         actual: Number(datum.y),
@@ -46,8 +48,7 @@ const makeInfluxPoint = (id: string, run: Run, datum: HeaterDatum): Influx.IPoin
         ki: Number(run.ki),
         kd: Number(run.kd),
         setpointHoldTime: 1e9 * 60 * Number(run.setpointHoldTime), // Convert from minutes to ns
-        instrumentId: id,
-        timestamp: 1e6 * Number(datum.x) // Influx time is in ns, not ms
+        instrumentId
     }
 });
 

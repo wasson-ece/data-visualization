@@ -114,13 +114,13 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                             <FormLabel className={classes.formLabel}>Metadata</FormLabel>
                             <FormGroup className={classes.formGroup}>
                                 <TextField
-                                    label="Identifier"
+                                    label="Heater Identifier"
                                     value={heater.label}
                                     onChange={onChangeLabel}
                                     className={classes.truncatedTextField}
                                     InputProps={{
                                         inputProps: {
-                                            style: { fontSize: 42 }
+                                            style: { fontSize: 28 }
                                         }
                                     }}
                                 />
@@ -130,7 +130,8 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                 </div>
                 <div
                     className={
-                        (!(isCollectingData || heater.data.length) && classes.hidden) || null
+                        `${classes.chart} ` +
+                            (!(isCollectingData || heater.data.length) && classes.hidden) || ''
                     }
                 >
                     <LineChart height={500} data={heater.data} setpoint={heater.setpoint} />
@@ -168,6 +169,9 @@ const styles = (theme: Theme) => ({
     },
     hidden: {
         display: 'none'
+    },
+    chart: {
+        padding: theme.spacing(3)
     }
 });
 

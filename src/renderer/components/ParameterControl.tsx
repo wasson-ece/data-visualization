@@ -50,12 +50,13 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
                         shrink: true
                     }}
                     type="number"
+                    variant="filled"
                     value={isDirty ? newSetpointValue : current}
                     InputProps={{
                         inputProps: {
                             step: 0.01,
                             style: {
-                                fontSize: 42
+                                fontSize: 28
                             }
                         },
                         endAdornment: (
@@ -95,7 +96,7 @@ const styles = (theme: Theme) => ({
         top: '25%'
     },
     input: {
-        fontSize: '50px'
+        // fontSize: '50px'
     },
     adornment: {
         color: '#666'
