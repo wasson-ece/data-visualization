@@ -16,6 +16,7 @@ interface HeaterRouteProps {
 
 interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
     heaters: HeaterState[];
+    isCollectingData: boolean;
     classes: any;
     startNextRun: (heaterId: string) => void;
     abortCurrentRun: (heaterId: string) => void;
@@ -34,7 +35,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
         this.props.onChangeHeaterLabel(this.props.match.params.id, e.target.value);
 
     render = () => {
-        const { heaters, classes, onChangeHeaterLabel } = this.props;
+        const { heaters, classes, onChangeHeaterLabel, isCollectingData } = this.props;
         const id = this.props.match.params.id;
         const heater = heaters.find(h => h.id == id);
         return (
@@ -45,6 +46,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                             heater={heater}
                             key={heater.id}
                             onChangeLabel={this.handleChangeHeaterLabel}
+                            isCollectingData={isCollectingData}
                         />
                     )}
                     {heater && (
@@ -63,7 +65,8 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
 }
 
 const mapState = (state: RootState) => ({
-    heaters: state.heaters
+    heaters: state.heaters,
+    isCollectingData: state.dataCollection.isCollectingData
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({

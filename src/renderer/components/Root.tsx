@@ -144,7 +144,6 @@ class Root extends React.Component<RootProps> {
             (current: number, h: HeaterState) => current + h.runs.filter(isUnfinishedRun).length,
             0
         );
-        console.log(validRunCount);
         if (validRunCount) persistUnfinishedRuns(this.props.heaters);
     };
 

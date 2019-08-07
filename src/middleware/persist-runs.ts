@@ -7,7 +7,7 @@ import HeaterState from '../interfaces/HeaterState';
 const shouldActionTriggerPersistence = (action: RootAction): boolean =>
     action.type === 'START_NEXT_RUN';
 
-export const isUnfinishedRun = (run: Run) => !run.isFinished && !run.isRunning && isRunValid(run);
+export const isUnfinishedRun = (run: Run) => !run.isFinished && isRunValid(run);
 
 export interface UnfinishedRuns {
     [heaterId: string]: Run[];
@@ -16,7 +16,16 @@ export interface UnfinishedRuns {
 export const persistUnfinishedRuns = (heaters: HeaterState[]) => {
     let unfinishedRuns: UnfinishedRuns = {};
     heaters.forEach(h => {
-        unfinishedRuns[h.id] = h.runs.filter(isUnfinishedRun);
+        unfinishedRuns[h.id] = h.runs
+            .filter(isUnfinishedRun)
+            .map(r => ({
+                ...r,
+                isRunning: false,
+                startTime: NaN,
+                isEquilibrating: false,
+                isHoldingSetpoint: false,
+                isDirty: false
+            }));
     });
 
     try {

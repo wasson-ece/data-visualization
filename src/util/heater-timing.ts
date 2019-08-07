@@ -11,8 +11,16 @@ export const isDoneHoldingSetpoint = (run: Run): boolean =>
 export const isReadyToStartRun = (run: Run): boolean =>
     run.isRunning && !run.isEquilibrating && !run.isHoldingSetpoint && !run.isFinished;
 
-export const elapsedMinutesSince = (startTime: number) => {
-    let time = (Date.now() - startTime) / (60 * 1000);
-    console.log(time);
-    return time;
+export const elapsedMinutesSince = (startTime: number) => (Date.now() - startTime) / (60 * 1000);
+
+export const remainingMinutes = (startTimeInMs: number, totalRunTimeMinutes: number): number =>
+    totalRunTimeMinutes - elapsedMinutesSince(startTimeInMs);
+
+export const minutesToString = (timeInMinutes: number): string => {
+    const minutes = Math.trunc(timeInMinutes);
+    const seconds = Math.floor(60 * (timeInMinutes - minutes));
+
+    if (minutes <= 0) return `${seconds} seconds`;
+    if (minutes > 0 && seconds <= 0) return `${minutes} minutes`;
+    return `${minutes} minutes, ${seconds} seconds`;
 };

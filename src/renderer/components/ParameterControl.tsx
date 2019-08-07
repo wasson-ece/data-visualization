@@ -55,7 +55,7 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
                         inputProps: {
                             step: 0.01,
                             style: {
-                                fontSize: 48
+                                fontSize: 42
                             }
                         },
                         endAdornment: (
@@ -67,16 +67,14 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
                     onChange={this.handleChange}
                     onKeyPress={this.handlePressEnter}
                 />
-                <div className={classes.sendButtonContainer}>
-                    {isDirty && (
-                        <Button
-                            className={classes.sendSetpointButton}
-                            onClick={this.handleChangeValue}
-                        >
-                            <span className={classes.buttonText}>Send Value</span>
-                            <SendIcon />
-                        </Button>
-                    )}
+                <div
+                    className={`${classes.sendButtonContainer} ${(!isDirty && classes.hidden) ||
+                        ''}`}
+                >
+                    <Button className={classes.sendSetpointButton} onClick={this.handleChangeValue}>
+                        <span className={classes.buttonText}>Send Value</span>
+                        <SendIcon />
+                    </Button>
                 </div>
             </div>
         );
@@ -104,6 +102,9 @@ const styles = (theme: Theme) => ({
     },
     buttonText: {
         marginRight: theme.spacing(1)
+    },
+    hidden: {
+        visibility: 'hidden'
     }
 });
 

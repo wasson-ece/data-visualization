@@ -10,6 +10,7 @@ import Run from '../../interfaces/Run';
 import HeaterRunRow from './HeaterRunRow';
 import { Button, Toolbar, TextField, FormLabel } from '@material-ui/core';
 import { isRunValid } from '../reducers/run';
+import { remainingMinutes, minutesToString } from '../../util/heater-timing';
 
 const hasValidRun = (runs: Run[]): boolean => runs.some(run => isRunValid(run));
 
@@ -42,7 +43,8 @@ const useRunStatusPanelStyles = makeStyles((theme: Theme) =>
             backgroundColor: lighten(theme.palette.background.default, 0.2),
             borderLeft: `solid 4px ${theme.palette.primary.main}`,
             borderRadius: theme.shape.borderRadius,
-            margin: theme.spacing(2, 0)
+            margin: theme.spacing(2, 0),
+            width: 'fit-content'
         },
         label: {
             ...theme.typography.button,
@@ -65,44 +67,55 @@ export interface CurrentRunProps {
 export const CurrentRunStatusPanel = (props: CurrentRunProps) => {
     const classes = useRunStatusPanelStyles();
     const { currentRun } = props;
+    const equilHoldTime = Number(currentRun.equilibrationTime);
+    const setpointHoldTime = Number(currentRun.setpointHoldTime);
 
-    const remainingEquilibrationTime: number = currentRun && Date.now() - currentRun.startTime;
-    const remainingSetpointHoldTime: number = 0 || NaN;
+    const remainingEquilibrationTime: number = remainingMinutes(
+        currentRun.startTime,
+        equilHoldTime
+    );
+    const remainingSetpointHoldTime: number = remainingMinutes(
+        currentRun.startTime,
+        equilHoldTime + setpointHoldTime
+    );
 
     return (
         <div className={classes.root}>
             <FormLabel className={classes.label}>Current Run Status</FormLabel>
             <div className={classes.content}>
-                {(remainingEquilibrationTime && remainingEquilibrationTime > 0 && (
+                {(remainingEquilibrationTime > 0 && (
                     <TextField
                         label="Remaining Equil. Time"
-                        value={remainingEquilibrationTime}
+                        value={minutesToString(remainingEquilibrationTime)}
                         disabled
                         className={classes.statusTime}
                         InputProps={{
                             disableUnderline: true,
                             inputProps: {
-                                style: { fontSize: 28, color: '#fff' }
+                                style: { fontSize: 28, color: '#fff', width: 'fit-content' }
                             }
                         }}
                     />
                 )) ||
                     null}
-                {(remainingSetpointHoldTime && remainingSetpointHoldTime > 0 && (
+                {(remainingSetpointHoldTime > 0 && remainingEquilibrationTime < 0 && (
                     <TextField
                         label="Remaining Setpoint Time"
-                        value={remainingSetpointHoldTime}
+                        value={minutesToString(remainingSetpointHoldTime)}
                         disabled
                         className={classes.statusTime}
                         InputProps={{
                             disableUnderline: true,
                             inputProps: {
-                                style: { fontSize: 28, color: '#fff' }
+                                style: { fontSize: 28, color: '#fff', width: 'fit-content' }
                             }
                         }}
                     />
                 )) ||
                     null}
+                {remainingEquilibrationTime <= 0 && remainingSetpointHoldTime <= 0 ? (
+                    <div>Run finished! ✔️</div>
+                ) : null}
             </div>
         </div>
     );
