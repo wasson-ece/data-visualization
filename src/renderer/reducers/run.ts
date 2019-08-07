@@ -29,7 +29,7 @@ export const defaultRunState = (): Run => ({
     isEquilibrating: false,
     isHoldingSetpoint: false,
     startTime: NaN,
-    isDirty: false
+    isDirty: false,
 });
 
 export const run: Reducer<Run, RunAction> = (state = defaultRunState(), action: RunAction) => {

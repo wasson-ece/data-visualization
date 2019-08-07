@@ -76,19 +76,35 @@ function HeaterRunRow(props: RunRowProps) {
     return (
         <TableRow className={className}>
             <TableCell>
-                <TextField value={run.kp || ''} onChange={handleChangeKpValue} placeholder="Kp" />
+                <TextField
+                    value={run.kp || ''}
+                    onChange={handleChangeKpValue}
+                    placeholder="Kp"
+                    disabled={run.isRunning}
+                />
             </TableCell>
             <TableCell>
-                <TextField value={run.ki || ''} onChange={handleChangeKiValue} placeholder="Ki" />
+                <TextField
+                    value={run.ki || ''}
+                    onChange={handleChangeKiValue}
+                    placeholder="Ki"
+                    disabled={run.isRunning}
+                />
             </TableCell>
             <TableCell>
-                <TextField value={run.kd || ''} onChange={handleChangeKdValue} placeholder="Kd" />
+                <TextField
+                    value={run.kd || ''}
+                    onChange={handleChangeKdValue}
+                    placeholder="Kd"
+                    disabled={run.isRunning}
+                />
             </TableCell>
             <TableCell>
                 <TextField
                     value={run.baseline || ''}
                     placeholder="Baseline"
                     onChange={handleChangeBaselineValue}
+                    disabled={run.isRunning}
                     InputProps={{
                         inputProps: {
                             min: -273.15,
@@ -108,6 +124,7 @@ function HeaterRunRow(props: RunRowProps) {
                     value={run.setpoint || ''}
                     onChange={handleChangeSetpointValue}
                     placeholder="Setpoint"
+                    disabled={run.isRunning}
                     InputProps={{
                         inputProps: {
                             min: -273.15,
@@ -126,6 +143,7 @@ function HeaterRunRow(props: RunRowProps) {
                 <TextField
                     value={run.equilibrationTime || ''}
                     onChange={handleChangeEquilibrationValue}
+                    disabled={run.isRunning}
                     placeholder="Equilibration Time"
                     InputProps={{
                         inputProps: {
@@ -146,6 +164,7 @@ function HeaterRunRow(props: RunRowProps) {
                     value={run.setpointHoldTime || ''}
                     onChange={handleChangeHoldTimeValue}
                     placeholder="Setpoint Hold Time"
+                    disabled={run.isRunning}
                     InputProps={{
                         inputProps: {
                             min: -273.15,
@@ -161,7 +180,7 @@ function HeaterRunRow(props: RunRowProps) {
                 />
             </TableCell>
             <TableCell>
-                <IconButton onClick={handleDeleteRow}>
+                <IconButton onClick={handleDeleteRow} disabled={run.isRunning}>
                     <DeleteForeverIcon />
                 </IconButton>
             </TableCell>

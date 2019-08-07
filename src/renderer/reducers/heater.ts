@@ -53,6 +53,19 @@ export const heater: Reducer<HeaterState, HeaterAction> = (
                 runs
             };
         }
+        case 'SET_HEATER_RUNS':
+            return {
+                ...state,
+                runs: [
+                    ...action.runs,
+                    {
+                        ...defaultRunState(),
+                        kp: undefined,
+                        ki: undefined,
+                        kd: undefined
+                    }
+                ]
+            };
         case 'DELETE_RUN': {
             let runs = state.runs.filter((run, index) => index !== action.index);
             let appendedRows =

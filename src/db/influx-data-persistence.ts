@@ -2,14 +2,7 @@ import * as Influx from 'influx';
 import { PersistenceFunction } from '../middleware/persist-data';
 import Run from '../interfaces/Run';
 import HeaterDatum from '../interfaces/HeaterDatum';
-
-const influxEnv = {
-    host: 'influx.wasson.tech',
-    port: '8086',
-    database: 'eclipse_pid',
-    username: 'admin',
-    password: 'g7VOHIkrOT'
-};
+import influxEnv from '../env/influx.env';
 
 const influxDataPersistence: PersistenceFunction = async (
     id: string,
@@ -52,7 +45,7 @@ const makeInfluxPoint = (id: string, run: Run, datum: HeaterDatum): Influx.IPoin
         kp: Number(run.kp),
         ki: Number(run.ki),
         kd: Number(run.kd),
-        setpointHoldTime: 1e6 * Number(run.setpointHoldTime),
+        setpointHoldTime: 1e9 * 60 * Number(run.setpointHoldTime), // Convert from minutes to ns
         instrumentId: id,
         timestamp: 1e6 * Number(datum.x) // Influx time is in ns, not ms
     }

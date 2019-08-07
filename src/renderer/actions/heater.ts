@@ -2,6 +2,7 @@ import { Action, ActionCreator } from 'redux';
 import HeaterDatum from '../../interfaces/HeaterDatum';
 import HeaterState from '../../interfaces/HeaterState';
 import { RunAction } from './run';
+import Run from '../../interfaces/Run';
 
 export type HeaterStateAttribute = keyof HeaterState;
 
@@ -25,12 +26,29 @@ export interface ClearHeaterData extends Action {
     runId: string;
 }
 
-export type HeaterAction = UpdateHeaterAttributes | AddHeaterDatum | ClearHeaterData | RunAction;
+export interface SetHeaterRuns extends Action {
+    type: 'SET_HEATER_RUNS';
+    id: string;
+    runs: Run[];
+}
+
+export type HeaterAction =
+    | UpdateHeaterAttributes
+    | AddHeaterDatum
+    | ClearHeaterData
+    | RunAction
+    | SetHeaterRuns;
 
 export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum: HeaterDatum) => ({
     type: 'ADD_HEATER_DATUM',
     id,
     datum
+});
+
+export const setHeaterRuns: ActionCreator<SetHeaterRuns> = (id: string, runs: Run[]) => ({
+    type: 'SET_HEATER_RUNS',
+    id,
+    runs
 });
 
 export const clearHeaterData: ActionCreator<ClearHeaterData> = (ovenId: string, runId = '') => ({

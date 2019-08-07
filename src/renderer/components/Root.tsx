@@ -16,7 +16,12 @@ import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
 import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollection';
 import Heater from '../../interfaces/Heater';
-import { addHeaterDatum, updateHeaterAttributes, clearHeaterData } from '../actions/heater';
+import {
+    addHeaterDatum,
+    updateHeaterAttributes,
+    clearHeaterData,
+    setHeaterRuns
+} from '../actions/heater';
 import HeaterState from '../../interfaces/HeaterState';
 import Run from '../../interfaces/Run';
 import HeaterDatum from '../../interfaces/HeaterDatum';
@@ -37,6 +42,11 @@ import {
     finishCurrentRun,
     startNextRun
 } from '../actions/run';
+import {
+    UnfinishedRuns,
+    persistUnfinishedRuns,
+    isUnfinishedRun
+} from '../../middleware/persist-runs';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -56,6 +66,7 @@ interface RootProps extends RouteComponentProps {
     finishOvenRun: (ovenId: string) => void;
     startNextOvenRun: (id: string) => void;
     clearRunData: (runId: string) => void;
+    setHeaterBoardRuns: (id: string, runs: Run[]) => void;
     heaters: HeaterState[];
     isCollectingData: boolean;
 }
@@ -63,7 +74,9 @@ interface RootProps extends RouteComponentProps {
 class Root extends React.Component<RootProps> {
     readData?: NodeJS.Timeout;
     reconcileHeaterParameters?: NodeJS.Timeout;
+    persistUnfinishedRuns?: NodeJS.Timeout;
     RECONCILIATION_CHECK_TIMEOUT = 2000;
+    PERSIST_RUNS_TIMEOUT = 10000;
 
     constructor(props: RootProps) {
         super(props);
@@ -73,21 +86,23 @@ class Root extends React.Component<RootProps> {
             this.RECONCILIATION_CHECK_TIMEOUT
         );
 
-        influxDataPersistence(
-            'foo_heater',
-            {
-                uuid: 'TEST',
-                startTime: Date.now(),
-                isFinished: true,
-                isEquilibrating: false,
-                isHoldingSetpoint: false,
-                isRunning: false,
-                ki: '10',
-                kp: '10',
-                kd: '10'
-            },
-            [{ x: Date.now(), y: 50.2, runId: 'TEST' }]
-        );
+        this.persistUnfinishedRuns = setInterval(this.persistRunsLoop, this.PERSIST_RUNS_TIMEOUT);
+
+        // influxDataPersistence(
+        //     'foo_heater',
+        //     {
+        //         uuid: 'TEST',
+        //         startTime: Date.now(),
+        //         isFinished: true,
+        //         isEquilibrating: false,
+        //         isHoldingSetpoint: false,
+        //         isRunning: false,
+        //         ki: '10',
+        //         kp: '10',
+        //         kd: '10'
+        //     },
+        //     [{ x: Date.now(), y: 50.2, runId: 'TEST' }]
+        // );
     }
 
     reconciliationLoop = () => {
@@ -124,6 +139,15 @@ class Root extends React.Component<RootProps> {
         });
     };
 
+    persistRunsLoop = () => {
+        const validRunCount = this.props.heaters.reduce(
+            (current: number, h: HeaterState) => current + h.runs.filter(isUnfinishedRun).length,
+            0
+        );
+        console.log(validRunCount);
+        if (validRunCount) persistUnfinishedRuns(this.props.heaters);
+    };
+
     componentWillReceiveProps = (nextProps: RootProps) => {
         /* Turn on/off data collection based on store state */
         if (nextProps.isCollectingData && !this.readData)
@@ -140,6 +164,7 @@ class Root extends React.Component<RootProps> {
         let heaters = await this.getData();
 
         this.props.setHeaterBoards(heaters);
+        this.hydrateHeaterBoardRuns();
     };
 
     refreshData = async () => {
@@ -173,6 +198,16 @@ class Root extends React.Component<RootProps> {
         });
 
         return heaters;
+    };
+
+    hydrateHeaterBoardRuns = () => {
+        let unfinishedRunsString = localStorage.getItem('unfinishedRuns');
+        if (!unfinishedRunsString) return;
+
+        let unfinishedRuns: UnfinishedRuns = JSON.parse(unfinishedRunsString);
+        Object.keys(unfinishedRuns).forEach((heaterId: string) => {
+            this.props.setHeaterBoardRuns(heaterId, unfinishedRuns[heaterId]);
+        });
     };
 
     render = () => {
@@ -212,6 +247,7 @@ class Root extends React.Component<RootProps> {
 
 const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) => ({
     setHeaterBoards: (heaters: Heater[]) => dispatch(setHeaters(heaters)),
+    setHeaterBoardRuns: (id: string, runs: Run[]) => dispatch(setHeaterRuns(id, runs)),
     updateHeater: (
         id: string,
         kp: number,
