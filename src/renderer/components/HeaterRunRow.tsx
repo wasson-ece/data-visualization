@@ -19,7 +19,7 @@ import { isRunValid } from '../reducers/run';
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         adornment: {
-            color: '#666'
+            color: '#3a3737'
         },
         running: {
             backgroundColor: 'rgb(89, 89, 89)'
@@ -77,6 +77,9 @@ function HeaterRunRow(props: RunRowProps) {
         <TableRow className={className}>
             <TableCell>
                 <TextField
+                    margin="dense"
+                    hiddenLabel
+                    variant="filled"
                     value={run.kp || ''}
                     onChange={handleChangeKpValue}
                     placeholder="Kp"
@@ -85,7 +88,10 @@ function HeaterRunRow(props: RunRowProps) {
             </TableCell>
             <TableCell>
                 <TextField
+                    margin="dense"
+                    hiddenLabel
                     value={run.ki || ''}
+                    variant="filled"
                     onChange={handleChangeKiValue}
                     placeholder="Ki"
                     disabled={run.isRunning}
@@ -93,7 +99,10 @@ function HeaterRunRow(props: RunRowProps) {
             </TableCell>
             <TableCell>
                 <TextField
+                    margin="dense"
+                    hiddenLabel
                     value={run.kd || ''}
+                    variant="filled"
                     onChange={handleChangeKdValue}
                     placeholder="Kd"
                     disabled={run.isRunning}
@@ -102,6 +111,9 @@ function HeaterRunRow(props: RunRowProps) {
             <TableCell>
                 <TextField
                     value={run.baseline || ''}
+                    variant="filled"
+                    margin="dense"
+                    hiddenLabel
                     placeholder="Baseline"
                     onChange={handleChangeBaselineValue}
                     disabled={run.isRunning}
@@ -109,7 +121,8 @@ function HeaterRunRow(props: RunRowProps) {
                         inputProps: {
                             min: -273.15,
                             max: 500,
-                            step: 0.01
+                            step: 0.01,
+                            'aria-label': 'dense hidden label'
                         },
                         endAdornment: (
                             <InputAdornment className={classes.adornment} position="start">
@@ -121,8 +134,11 @@ function HeaterRunRow(props: RunRowProps) {
             </TableCell>
             <TableCell>
                 <TextField
+                    margin="dense"
+                    hiddenLabel
                     value={run.setpoint || ''}
                     onChange={handleChangeSetpointValue}
+                    variant="filled"
                     placeholder="Setpoint"
                     disabled={run.isRunning}
                     InputProps={{
@@ -141,8 +157,11 @@ function HeaterRunRow(props: RunRowProps) {
             </TableCell>
             <TableCell>
                 <TextField
+                    margin="dense"
                     value={run.equilibrationTime || ''}
                     onChange={handleChangeEquilibrationValue}
+                    variant="filled"
+                    hiddenLabel
                     disabled={run.isRunning}
                     placeholder="Equilibration Time"
                     InputProps={{
@@ -161,8 +180,11 @@ function HeaterRunRow(props: RunRowProps) {
             </TableCell>
             <TableCell>
                 <TextField
+                    margin="dense"
                     value={run.setpointHoldTime || ''}
                     onChange={handleChangeHoldTimeValue}
+                    variant="filled"
+                    hiddenLabel
                     placeholder="Setpoint Hold Time"
                     disabled={run.isRunning}
                     InputProps={{

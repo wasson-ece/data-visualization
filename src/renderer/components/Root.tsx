@@ -275,9 +275,9 @@ const mapState = (state: RootState) => ({
 const styles = {
     root: {
         display: 'grid',
-        gridTemplateColumns: 'auto 1fr',
-        minHeight: '100%',
-        height: '100%'
+        gridTemplateColumns: 'min-content 1fr',
+        height: '100%',
+        minHeight: '100vh'
     }
 };
 

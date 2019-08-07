@@ -48,10 +48,10 @@
         }
     },
     "build": {
-        "productName": "ProductName",
-        "appId": "org.your.productname",
+        "productName": "Heater Testing",
+        "appId": "wasson.ece.HeaterTune",
         "mac": {
-            "category": "your.app.category.type"
+            "category": "wasson.ece.chromatography"
         },
         "directories": {
             "output": "release"

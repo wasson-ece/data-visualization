@@ -6,7 +6,8 @@ import {
     YAxis,
     HorizontalGridLines,
     LineSeriesCanvas,
-    Highlight
+    Highlight,
+    ChartLabel
     // @ts-ignore
 } from 'react-vis';
 import { withStyles, Theme } from '@material-ui/core';
@@ -41,6 +42,11 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
 
     DEFAULT_HEIGHT = 300;
 
+    tickFormat = (x: number) => {
+        if (!this.props.data[0]) return '';
+        return String(((x - this.props.data[0].x) / 60000).toFixed(3));
+    };
+
     render() {
         const { data, classes, height, setpoint } = this.props;
         const { drawBounds, area } = this.state;
@@ -61,8 +67,8 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
                     height={height || this.DEFAULT_HEIGHT}
                 >
                     <HorizontalGridLines />
-                    <YAxis />
-                    <XAxis />
+                    <YAxis title="Temperature °C" />
+                    <XAxis tickFormat={this.tickFormat} title="Minutes" />
                     <LineSeriesCanvas data={data} color={theme.palette.primary.main} />
                     {setpoint && setpointLine && (
                         <LineSeriesCanvas

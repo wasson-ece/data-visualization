@@ -5,33 +5,27 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
-import { FormLabel, Button, Collapse, ListItemIcon } from '@material-ui/core';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { FormLabel, Button, Collapse, ListItemIcon, IconButton } from '@material-ui/core';
 import { ControllerSidebarItem, DetectorSidebarItem } from '../../enums/SidebarItems';
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import HeaterState from '../../interfaces/HeaterState';
-
-const drawerWidth = 260;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             display: 'flex',
-            position: 'sticky' as 'sticky'
+            position: 'sticky' as 'sticky',
+            height: '100%'
         },
         drawer: {
             [theme.breakpoints.up('sm')]: {
-                width: drawerWidth,
                 flexShrink: 0
-            }
-        },
-        appBar: {
-            marginLeft: drawerWidth,
-            [theme.breakpoints.up('sm')]: {
-                width: `calc(100% - ${drawerWidth}px)`
             }
         },
         menuButton: {
@@ -41,9 +35,6 @@ const useStyles = makeStyles((theme: Theme) =>
             }
         },
         toolbar: theme.mixins.toolbar,
-        drawerPaper: {
-            width: drawerWidth
-        },
         content: {
             flexGrow: 1,
             padding: theme.spacing(3)
@@ -68,6 +59,15 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         nested: {
             paddingLeft: theme.spacing(4)
+        },
+        open: {
+            borderRadius: 0,
+            height: '100%'
+        },
+        close: {
+            width: '100%',
+            borderRadius: 0,
+            margin: 0
         }
     })
 );
@@ -84,6 +84,7 @@ function SidebarMenu(props: SidebarMenuProps) {
     const [mfcDrawerIsOpen, setMfcDrawerOpen] = React.useState(false);
     const [heaterDrawerIsOpen, setHeaterDrawerOpen] = React.useState(false);
     const [dioDrawerIsOpen, setDioDrawerOpen] = React.useState(false);
+    const [mainDrawerIsOpen, setMainDrawerOpen] = React.useState(true);
 
     function handleClickDioDrawer() {
         setDioDrawerOpen(!dioDrawerIsOpen);
@@ -101,20 +102,36 @@ function SidebarMenu(props: SidebarMenuProps) {
         setEpcDrawerOpen(!epcDrawerIsOpen);
     }
 
+    function handleSetMainDrawerOpen() {
+        setMainDrawerOpen(!mainDrawerIsOpen);
+    }
+
     const { isCollectingData, onToggleDataCollection, heaters } = props;
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} style={{ width: mainDrawerIsOpen ? 240 : 30 }}>
             <CssBaseline />
-            <nav className={classes.drawer}>
-                <Drawer
-                    variant="permanent"
-                    anchor="left"
-                    classes={{
-                        paper: classes.drawerPaper
-                    }}
+            {!mainDrawerIsOpen && (
+                <IconButton
+                    color="inherit"
+                    onClick={handleSetMainDrawerOpen}
+                    edge="start"
+                    className={classes.open}
                 >
+                    <ChevronRightIcon />
+                </IconButton>
+            )}
+            <nav className={classes.drawer}>
+                <Drawer variant="persistent" anchor="left" open={mainDrawerIsOpen}>
                     <div>
+                        <IconButton
+                            color="inherit"
+                            onClick={handleSetMainDrawerOpen}
+                            edge="start"
+                            className={classes.close}
+                        >
+                            {mainDrawerIsOpen && <ChevronLeftIcon />}
+                        </IconButton>
                         <div className={classes.globalButtonPanel}>
                             <Button
                                 color="primary"
