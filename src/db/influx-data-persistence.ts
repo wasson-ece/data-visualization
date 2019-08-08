@@ -33,7 +33,6 @@ const influxDataPersistence: PersistenceFunction = async (
             }
         ]
     });
-    console.log(data.map(datum => makeInfluxPoint(id, run, datum)));
     influx.writePoints(data.map(datum => makeInfluxPoint(id, run, datum))).catch(console.log);
 };
 

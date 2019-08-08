@@ -50,14 +50,14 @@ import {
 interface RootProps extends RouteComponentProps {
     classes: any;
     setHeaterBoards: (detectors: Heater[]) => void;
+    addDatum: (id: string, datum: HeaterDatum) => void;
     updateHeater: (
         id: string,
         kp: number,
         ki: number,
         kd: number,
         setpoint: number,
-        actual: number,
-        datum: HeaterDatum
+        actual: number
     ) => void;
     toggleDataCollection: () => void;
     startOvenEquilibration: (ovenId: string) => void;
@@ -99,20 +99,15 @@ class Root extends React.Component<RootProps> {
         let heaters = this.props.heaters;
         heaters.forEach(heater => {
             let activeRun: Run | undefined = findActiveRun(heater);
-            if (!activeRun) console.log('no active run');
             if (!activeRun) return;
             if (!areHeaterParamsWithinTolerance(heater, activeRun)) {
-                console.log('params not right');
                 reconcileHeaterRunParams(heater, activeRun);
             } else {
                 if (isReadyToStartRun(activeRun)) {
-                    console.log('ready to start');
                     startOvenEquilibration(heater.id);
                 } else if (isDoneEquilibrating(activeRun)) {
-                    console.log('fin equilibrating');
                     startOvenSetpointHold(heater.id);
                 } else if (isDoneHoldingSetpoint(activeRun)) {
-                    console.log('setpoint hold finished');
                     finishOvenRun(heater.id);
                     startNextOvenRun(heater.id);
                     // Wait before clearing out previous run's data
@@ -153,12 +148,15 @@ class Root extends React.Component<RootProps> {
         let heaters = await this.getData();
         heaters.forEach(h => {
             let heater = this.props.heaters.find(cur => cur.id === h.id);
+
+            if (!heater) return;
             let datum: HeaterDatum = {
                 x: Date.now(),
                 y: h.actual,
                 runId: (heater && heater.currentRun) || ''
             };
-            this.props.updateHeater(h.id, h.kp, h.ki, h.kd, h.setpoint, h.actual, datum);
+            this.props.updateHeater(heater.id, h.kp, h.ki, h.kd, h.setpoint, h.actual);
+            this.props.addDatum(heater.id, datum);
         });
     };
 
@@ -230,18 +228,15 @@ class Root extends React.Component<RootProps> {
 const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) => ({
     setHeaterBoards: (heaters: Heater[]) => dispatch(setHeaters(heaters)),
     setHeaterBoardRuns: (id: string, runs: Run[]) => dispatch(setHeaterRuns(id, runs)),
+    addDatum: (id: string, datum: HeaterDatum) => dispatch(addHeaterDatum(id, datum)),
     updateHeater: (
         id: string,
         kp: number,
         ki: number,
         kd: number,
         setpoint: number,
-        actual: number,
-        datum: HeaterDatum
-    ) => {
-        dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual }));
-        dispatch(addHeaterDatum(id, datum));
-    },
+        actual: number
+    ) => dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual })),
     toggleDataCollection: () => dispatch(toggleDataCollection()),
     startOvenEquilibration: (id: string) => dispatch(startEquilibration(id)),
     startOvenSetpointHold: (id: string) => dispatch(startSetpointHold(id)),

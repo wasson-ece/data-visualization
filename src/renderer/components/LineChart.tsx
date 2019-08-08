@@ -68,6 +68,7 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
                     xDomain={drawBounds && [drawBounds.left, drawBounds.right]}
                     yDomain={drawBounds && [drawBounds.bottom, drawBounds.top]}
                     height={height || this.DEFAULT_HEIGHT}
+                    margin={{ left: 50 }}
                 >
                     <HorizontalGridLines />
                     <YAxis title="Temperature °C" />
