@@ -14,6 +14,7 @@ export const heaters: Reducer<HeaterState[], HeatersAction> = (
     switch (action.type) {
         case 'ADD_HEATER_DATUM':
         case 'CLEAR_HEATER_DATA':
+            if (action.type === 'CLEAR_HEATER_DATA') console.log('clear heaterS');
         case 'SET_HEATER_RUNS':
         case 'UPDATE_HEATER_ATTRIBUTES':
             return state.map(h => heater(h, action));

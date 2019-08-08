@@ -64,7 +64,7 @@ interface RootProps extends RouteComponentProps {
     startOvenSetpointHold: (ovenId: string) => void;
     finishOvenRun: (ovenId: string) => void;
     startNextOvenRun: (id: string) => void;
-    clearRunData: (runId: string) => void;
+    clearRunData: (heaterId: string, runId: string) => void;
     setHeaterBoardRuns: (id: string, runs: Run[]) => void;
     heaters: HeaterState[];
     isCollectingData: boolean;
@@ -116,7 +116,7 @@ class Root extends React.Component<RootProps> {
                     finishOvenRun(heater.id);
                     startNextOvenRun(heater.id);
                     // Wait before clearing out previous run's data
-                    setTimeout(() => clearRunData(activeRun!.uuid), 5000);
+                    setTimeout(() => clearRunData(heater.id, activeRun!.uuid), 5000);
                 }
             }
         });
@@ -247,7 +247,11 @@ const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) =
     startOvenSetpointHold: (id: string) => dispatch(startSetpointHold(id)),
     finishOvenRun: (id: string) => dispatch(finishCurrentRun(id)),
     startNextOvenRun: (id: string) => dispatch(startNextRun(id)),
-    clearRunData: (runId: string) => dispatch(clearHeaterData(/* No id clears all data */))
+    clearRunData: (ovenId: string, runId: string) => {
+        /* Clear unlabelled data and finished run data */
+        dispatch(clearHeaterData(ovenId, ''));
+        dispatch(clearHeaterData(ovenId, runId));
+    }
 });
 
 const mapState = (state: RootState) => ({

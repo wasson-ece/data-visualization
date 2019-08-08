@@ -29,6 +29,7 @@ export const heater: Reducer<HeaterState, HeaterAction> = (
         case 'ADD_HEATER_DATUM':
             return { ...state, data: [...state.data, action.datum] };
         case 'CLEAR_HEATER_DATA':
+            console.log('in clear heater');
             return action.runId
                 ? { ...state, data: state.data.filter(datum => datum.runId !== action.runId) }
                 : { ...state, data: [] };
