@@ -25,10 +25,10 @@ const useStyles = makeStyles((theme: Theme) =>
             backgroundColor: 'rgb(89, 89, 89)'
         },
         finished: {
-            backgroundColor: '#3a443a'
+            backgroundColor: '#545a54'
         },
         invalid: {
-            backgroundColor: '#914a4a'
+            backgroundColor: '#583a3a'
         }
     })
 );
