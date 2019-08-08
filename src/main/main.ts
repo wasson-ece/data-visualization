@@ -1,6 +1,9 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as Sentry from '@sentry/electron';
+
+Sentry.init({ dsn: 'https://bdfedd41b9304cb2ae84eb83f7a88242@sentry.io/1525469' });
 
 let win: BrowserWindow | null;
 
@@ -21,7 +24,7 @@ const createWindow = async () => {
 
     win = new BrowserWindow();
     win.maximize();
-    win.setTitle('Cooling Oven');
+    win.setTitle('Oven Tuning');
 
     if (process.env.NODE_ENV !== 'production') {
         process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = '1';
@@ -61,3 +64,5 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+throw new Error('another main error');

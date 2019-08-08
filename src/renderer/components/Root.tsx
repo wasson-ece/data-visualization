@@ -30,7 +30,6 @@ import {
     areHeaterParamsWithinTolerance,
     reconcileHeaterRunParams
 } from '../../util/heater-run';
-import influxDataPersistence from '../../db/influx-data-persistence';
 import {
     isDoneEquilibrating,
     isDoneHoldingSetpoint,
@@ -87,22 +86,6 @@ class Root extends React.Component<RootProps> {
         );
 
         this.persistUnfinishedRuns = setInterval(this.persistRunsLoop, this.PERSIST_RUNS_TIMEOUT);
-
-        // influxDataPersistence(
-        //     'foo_heater',
-        //     {
-        //         uuid: 'TEST',
-        //         startTime: Date.now(),
-        //         isFinished: true,
-        //         isEquilibrating: false,
-        //         isHoldingSetpoint: false,
-        //         isRunning: false,
-        //         ki: '10',
-        //         kp: '10',
-        //         kd: '10'
-        //     },
-        //     [{ x: Date.now(), y: 50.2, runId: 'TEST' }]
-        // );
     }
 
     reconciliationLoop = () => {

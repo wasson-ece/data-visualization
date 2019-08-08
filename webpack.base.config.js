@@ -10,11 +10,12 @@ module.exports = {
     },
     node: {
         __dirname: true,
-        __filename: false
+        __filename: true
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js', '.json']
     },
     devtool: 'source-map',
-    plugins: []
+    plugins: [],
+    externals: [{ '@sentry/electron': `require('@sentry/electron')` }]
 };
