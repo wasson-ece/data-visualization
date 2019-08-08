@@ -4,7 +4,7 @@ To connect to a Ti board, make sure to set the ethernet connection subnet mask (
 
 IP address: `10.8.0.135`
 
-Subnet mask: `255.0.0.0`
+Subnet mask: `255.255.255.0`
 
 Every time you upgrade Electron, run `node sentry-symbols.js` to update symbol information for error reporting.
 

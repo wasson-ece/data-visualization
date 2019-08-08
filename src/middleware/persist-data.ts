@@ -2,6 +2,9 @@ import { Dispatch, Store } from 'redux';
 import { RootState, RootAction } from '../renderer/reducers';
 import HeaterDatum from '../interfaces/HeaterDatum';
 import Run from '../interfaces/Run';
+import { FinishCurrentRun } from '../renderer/actions/run';
+import deepCopy from '../util/deep-copy';
+import HeaterState from '../interfaces/HeaterState';
 
 /**
  * Takes all run state information and opaquely persists it somewhere
@@ -25,9 +28,9 @@ export const shouldActionTriggerPersistence = (action: RootAction): boolean => {
  * @param runId UUID of the run
  */
 export const findRunData = (state: RootState, heaterId: string): [string, Run, HeaterDatum[]] => {
-    let heater = state.heaters.find(h => (h.id = heaterId));
-    let run = heater!.runs.find(r => r.isRunning);
-    let id = heater!.label;
+    let heater: HeaterState = state.heaters.find(h => h.id === heaterId);
+    let run = heater.runs.find(r => r.isRunning);
+    let id = heater.label;
     if (run) return [id, run, heater!.data.filter(datum => datum.runId === run!.uuid)];
     else throw new Error(`Unable to find current run data on heater ${heaterId}`);
 };
@@ -40,12 +43,9 @@ export const findRunData = (state: RootState, heaterId: string): [string, Run, H
 const persistDataMiddlewareCreator = (persistenceFn: PersistenceFunction) => (
     store: Store<RootState>
 ) => (next: Dispatch<RootAction>) => (action: RootAction) => {
-    if (!shouldActionTriggerPersistence(action)) return next(action);
-
-    if (action.type === 'FINISH_CURRENT_RUN') {
+    if (shouldActionTriggerPersistence(action)) {
         let state = store.getState();
-        const [id, heater, data] = findRunData(state, action.id);
-        console.log(data);
+        const [id, heater, data] = findRunData(state, (action as FinishCurrentRun).id);
         persistenceFn(id || 'unlabelled', heater, data);
     }
 

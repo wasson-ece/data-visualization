@@ -38,12 +38,15 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
         const { heaters, classes, onChangeHeaterLabel, isCollectingData } = this.props;
         const id = this.props.match.params.id;
         const heater = heaters.find(h => h.id == id);
+        if (!heater) return null;
+        const currentRun = heater.runs.find(r => r.isRunning);
         return (
             <div className={classes.root}>
                 <div className={classes.details}>
                     {heater && (
                         <HeaterDetails
                             heater={heater}
+                            currentRun={currentRun}
                             key={heater.id}
                             onChangeLabel={this.handleChangeHeaterLabel}
                             isCollectingData={isCollectingData}
@@ -53,7 +56,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                         <RunTable
                             id={id}
                             runs={heater.runs}
-                            currentRun={heater.runs.find(r => r.isRunning)}
+                            currentRun={currentRun}
                             onStartRuns={() => this.props.startNextRun(heater.id)}
                             onStopRuns={() => this.props.abortCurrentRun(heater.id)}
                         />

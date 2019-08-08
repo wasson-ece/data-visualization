@@ -7,8 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/dist/main.js"
+            "name": "Electron Main",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-nix",
+            "windows": {
+                "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-win.cmd"
+            },
+            // runtimeArgs will be passed directly to your Electron application
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

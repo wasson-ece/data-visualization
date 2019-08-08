@@ -149,6 +149,7 @@
         "react-vis": "^1.11.7",
         "redux": "^4.0.1",
         "roboto-fontface": "^0.10.0",
+        "source-map-support": "^0.5.13",
         "typeface-roboto": "^0.0.54"
     }
 }

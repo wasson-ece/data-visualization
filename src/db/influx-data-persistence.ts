@@ -27,7 +27,6 @@ const influxDataPersistence: PersistenceFunction = async (
                     kd: Influx.FieldType.INTEGER,
                     setpoint: Influx.FieldType.FLOAT,
                     actual: Influx.FieldType.FLOAT,
-                    timestamp: Influx.FieldType.INTEGER,
                     setpointHoldTime: Influx.FieldType.FLOAT
                 },
                 tags: ['run', 'instrumentId']
@@ -47,8 +46,7 @@ const makeInfluxPoint = (instrumentId: string, run: Run, datum: HeaterDatum): In
         kp: Number(run.kp),
         ki: Number(run.ki),
         kd: Number(run.kd),
-        setpointHoldTime: 1e9 * 60 * Number(run.setpointHoldTime), // Convert from minutes to ns
-        instrumentId
+        setpointHoldTime: 1e9 * 60 * Number(run.setpointHoldTime) // Convert from minutes to ns
     }
 });
 

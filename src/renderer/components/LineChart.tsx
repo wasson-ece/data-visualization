@@ -13,6 +13,7 @@ import {
 import { withStyles, Theme } from '@material-ui/core';
 import { Point } from 'electron';
 import { theme } from '../../style/theme';
+import has from '../../util/has';
 require('react-vis/dist/style.css');
 
 interface LineChartProps {
@@ -51,13 +52,15 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
         const { data, classes, height, setpoint } = this.props;
         const { drawBounds, area } = this.state;
         const setpointLine =
-            (setpoint &&
+            (has(setpoint) &&
                 data &&
                 data.length > 1 && [
                     { x: data[0].x, y: setpoint },
                     { x: data[data.length - 1].x, y: setpoint }
                 ]) ||
-            null;
+            [];
+
+        if (!data || !(data.length > 2)) return null;
 
         return (
             <div className={classes.root}>
@@ -65,17 +68,19 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
                     xDomain={drawBounds && [drawBounds.left, drawBounds.right]}
                     yDomain={drawBounds && [drawBounds.bottom, drawBounds.top]}
                     height={height || this.DEFAULT_HEIGHT}
+                    margin={{ left: 50 }}
                 >
                     <HorizontalGridLines />
                     <YAxis title="Temperature °C" />
                     <XAxis tickFormat={this.tickFormat} title="Minutes" />
                     <LineSeriesCanvas data={data} color={theme.palette.primary.main} />
-                    {setpoint && setpointLine && (
+                    {(has(setpoint) && setpointLine && (
                         <LineSeriesCanvas
                             data={setpointLine}
                             color={theme.palette.secondary.main}
                         />
-                    )}
+                    )) ||
+                        undefined}
                     <Highlight
                         onBrushEnd={(nextDrawBounds: DrawBounds) => {
                             this.setState({ drawBounds: nextDrawBounds });
