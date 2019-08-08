@@ -6,6 +6,8 @@ IP address: `10.8.0.135`
 
 Subnet mask: `255.0.0.0`
 
+Every time you upgrade Electron, run `node sentry-symbols.js` to update symbol information for error reporting.
+
 # About
 
 This project was bootstrapped from the [electron-react-typescript starter](git@github.com:Robinfr/electron-react-typescript.git).

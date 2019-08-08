@@ -64,5 +64,3 @@ app.on('activate', () => {
         createWindow();
     }
 });
-
-throw new Error('another main error');
