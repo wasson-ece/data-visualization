@@ -29,7 +29,7 @@ export const defaultRunState = (): Run => ({
     isEquilibrating: false,
     isHoldingSetpoint: false,
     startTime: NaN,
-    isDirty: false,
+    isDirty: false
 });
 
 export const run: Reducer<Run, RunAction> = (state = defaultRunState(), action: RunAction) => {
@@ -47,7 +47,6 @@ export const run: Reducer<Run, RunAction> = (state = defaultRunState(), action: 
                 isHoldingSetpoint: false
             };
         case 'START_NEXT_RUN':
-            console.log('in run reducer');
             return { ...state, isRunning: true, startTime: Date.now() };
         case 'START_SETPOINT_HOLD':
             return { ...state, isHoldingSetpoint: true, isEquilibrating: false };

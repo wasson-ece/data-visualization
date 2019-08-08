@@ -45,7 +45,6 @@ const persistDataMiddlewareCreator = (persistenceFn: PersistenceFunction) => (
     if (action.type === 'FINISH_CURRENT_RUN') {
         let state = store.getState();
         const [id, heater, data] = findRunData(state, action.id);
-        console.log(data);
         persistenceFn(id || 'unlabelled', heater, data);
     }
 

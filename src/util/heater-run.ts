@@ -28,6 +28,7 @@ const isSetpointWithinTolerance = (heater: HeaterState, run: Run): boolean => {
         return Math.abs(heater.setpoint - Number(run.baseline)) < SETPOINT_TOLERANCE;
     if (run.isHoldingSetpoint)
         return Math.abs(heater.setpoint - Number(run.setpoint)) < SETPOINT_TOLERANCE;
+    return true;
 };
 
 export const reconcileHeaterRunParams = (heater: HeaterState, run: Run) => {
@@ -49,7 +50,10 @@ export const reconcileHeaterRunParams = (heater: HeaterState, run: Run) => {
                 run.isEquilibrating ? run.baseline : run.setpoint
             }`
         );
-        if (run.isEquilibrating) tiClient.sendSetpoint(Number(heater.id), Number(run.baseline));
+        if (run.isEquilibrating) {
+            console.log(`sending equil ${run.baseline}`);
+            tiClient.sendSetpoint(Number(heater.id), Number(run.baseline));
+        }
         if (run.isHoldingSetpoint) tiClient.sendSetpoint(Number(heater.id), Number(run.setpoint));
     }
 };

@@ -13,11 +13,13 @@ import LineChart from './LineChart';
 import { tiClient } from '../../ti-communication/ti';
 import Command from 'node-ti/build/enums/command';
 import HeaterState from '../../interfaces/HeaterState';
+import Run from '../../interfaces/Run';
 
 interface HeaterDetailsProps {
     heater: HeaterState;
     isCollectingData: boolean;
     classes: any;
+    currentRun?: Run;
     onChangeLabel: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -45,7 +47,11 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
     };
 
     render = () => {
-        const { heater, classes, onChangeLabel, isCollectingData } = this.props;
+        const { heater, classes, onChangeLabel, isCollectingData, currentRun } = this.props;
+        let setpoint: number | undefined = undefined;
+        if (currentRun && currentRun.isEquilibrating) setpoint = Number(currentRun.baseline);
+        else if (currentRun && currentRun.isHoldingSetpoint) setpoint = Number(currentRun.setpoint);
+
         return (
             <div>
                 <div className={classes.readingsAndControlContainer}>
@@ -134,7 +140,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                             (!(isCollectingData || heater.data.length) && classes.hidden) || ''
                     }
                 >
-                    <LineChart height={500} data={heater.data} setpoint={heater.setpoint} />
+                    <LineChart height={500} data={heater.data} setpoint={setpoint} />
                 </div>
             </div>
         );
