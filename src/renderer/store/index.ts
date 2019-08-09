@@ -5,9 +5,14 @@ import { rootReducer, RootState } from '../reducers';
 import persistData from '../../middleware/persist-data';
 import influxDataPersistence from '../../db/influx-data-persistence';
 import persistUnfinishedRunsMiddlware from '../../middleware/persist-runs';
+import persistOvenLabelsMiddlware from '../../middleware/persist-oven-labels';
 
 const configureStore = (initialState?: RootState): Store<RootState | undefined> => {
-    const middlewares: any[] = [persistData(influxDataPersistence), persistUnfinishedRunsMiddlware];
+    const middlewares: any[] = [
+        persistData(influxDataPersistence),
+        persistUnfinishedRunsMiddlware,
+        persistOvenLabelsMiddlware
+    ];
     const enhancer = composeWithDevTools(applyMiddleware(...middlewares));
     return createStore(rootReducer, initialState, enhancer);
 };

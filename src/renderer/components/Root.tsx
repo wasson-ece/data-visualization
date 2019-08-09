@@ -46,6 +46,7 @@ import {
     persistUnfinishedRuns,
     isUnfinishedRun
 } from '../../middleware/persist-runs';
+import { OvenLabels, persistOvenLabels } from '../../middleware/persist-oven-labels';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
@@ -66,6 +67,7 @@ interface RootProps extends RouteComponentProps {
     startNextOvenRun: (id: string) => void;
     clearRunData: (heaterId: string, runId: string) => void;
     setHeaterBoardRuns: (id: string, runs: Run[]) => void;
+    updateHeaterLabel: (id: string, label: string) => void;
     heaters: HeaterState[];
     isCollectingData: boolean;
 }
@@ -74,8 +76,9 @@ class Root extends React.Component<RootProps> {
     readData?: NodeJS.Timeout;
     reconcileHeaterParameters?: NodeJS.Timeout;
     persistUnfinishedRuns?: NodeJS.Timeout;
+    persistOvenLabels?: NodeJS.Timeout;
     RECONCILIATION_CHECK_TIMEOUT = 2000;
-    PERSIST_RUNS_TIMEOUT = 10000;
+    PERSIST_STATE_TIMEOUT = 10000;
 
     constructor(props: RootProps) {
         super(props);
@@ -85,7 +88,11 @@ class Root extends React.Component<RootProps> {
             this.RECONCILIATION_CHECK_TIMEOUT
         );
 
-        this.persistUnfinishedRuns = setInterval(this.persistRunsLoop, this.PERSIST_RUNS_TIMEOUT);
+        this.persistUnfinishedRuns = setInterval(this.persistRunsLoop, this.PERSIST_STATE_TIMEOUT);
+        this.persistOvenLabels = setInterval(
+            this.persistOvenLabelsLoop,
+            this.PERSIST_STATE_TIMEOUT
+        );
     }
 
     reconciliationLoop = () => {
@@ -125,6 +132,14 @@ class Root extends React.Component<RootProps> {
         if (validRunCount) persistUnfinishedRuns(this.props.heaters);
     };
 
+    persistOvenLabelsLoop = () => {
+        const validLabelsCount = this.props.heaters.reduce(
+            (current: number, h: HeaterState) => current + h.label.length,
+            0
+        );
+        if (validLabelsCount) persistOvenLabels(this.props.heaters);
+    };
+
     componentWillReceiveProps = (nextProps: RootProps) => {
         /* Turn on/off data collection based on store state */
         if (nextProps.isCollectingData && !this.readData)
@@ -142,6 +157,7 @@ class Root extends React.Component<RootProps> {
 
         this.props.setHeaterBoards(heaters);
         this.hydrateHeaterBoardRuns();
+        this.hydrateHeaterLabels();
     };
 
     refreshData = async () => {
@@ -188,6 +204,15 @@ class Root extends React.Component<RootProps> {
         let unfinishedRuns: UnfinishedRuns = JSON.parse(unfinishedRunsString);
         Object.keys(unfinishedRuns).forEach((heaterId: string) => {
             this.props.setHeaterBoardRuns(heaterId, unfinishedRuns[heaterId]);
+        });
+    };
+
+    hydrateHeaterLabels = () => {
+        let ovenLabelsString = localStorage.getItem('ovenLabels');
+        if (!ovenLabelsString) return;
+        let ovenLabels: OvenLabels = JSON.parse(ovenLabelsString);
+        Object.keys(ovenLabels).forEach((heaterId: string) => {
+            this.props.updateHeaterLabel(heaterId, ovenLabels[heaterId]);
         });
     };
 
@@ -238,6 +263,8 @@ const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) =
         setpoint: number,
         actual: number
     ) => dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual })),
+    updateHeaterLabel: (id: string, label: string) =>
+        dispatch(updateHeaterAttributes(id, { label })),
     toggleDataCollection: () => dispatch(toggleDataCollection()),
     startOvenEquilibration: (id: string) => dispatch(startEquilibration(id)),
     startOvenSetpointHold: (id: string) => dispatch(startSetpointHold(id)),

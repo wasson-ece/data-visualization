@@ -15,6 +15,7 @@ import StarBorder from '@material-ui/icons/StarBorder';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import HeaterState from '../../interfaces/HeaterState';
+import { heater } from '../reducers/heater';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -81,7 +82,16 @@ interface SidebarMenuProps extends RouteComponentProps {
 const arePropsEqual = (props: SidebarMenuProps, nextProps: SidebarMenuProps) =>
     props.isCollectingData === nextProps.isCollectingData &&
     props.heaters.length === nextProps.heaters.length &&
-    props.location.pathname === nextProps.location.pathname;
+    props.location.pathname === nextProps.location.pathname &&
+    !hasHeaterLabelsChanges(props.heaters, nextProps.heaters);
+
+const hasHeaterLabelsChanges = (currentHeaters: HeaterState[], nextHeaters: HeaterState[]) => {
+    for (let i = 0; i < nextHeaters.length; i++) {
+        if (!currentHeaters[i] || currentHeaters[i].label !== nextHeaters[i].label) return true;
+    }
+
+    return false;
+};
 
 const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
     const classes = useStyles();
@@ -184,7 +194,10 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
                                                     props.location.pathname
                                                 }
                                             >
-                                                <ListItemText primary={`Oven #${heater.id}`} />
+                                                <ListItemText
+                                                    primary={`${heater.label ||
+                                                        `Oven ${heater.id}`}`}
+                                                />
                                             </ListItem>
                                         </Link>
                                     ))}
