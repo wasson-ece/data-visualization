@@ -35,7 +35,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
         this.props.onChangeHeaterLabel(this.props.match.params.id, e.target.value);
 
     render = () => {
-        const { heaters, classes, onChangeHeaterLabel, isCollectingData } = this.props;
+        const { heaters, classes, isCollectingData } = this.props;
         const id = this.props.match.params.id;
         const heater = heaters.find(h => h.id == id);
         if (!heater) return null;

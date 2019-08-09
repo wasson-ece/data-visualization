@@ -69,12 +69,6 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                                     type="number"
                                     value={heater.actual && heater.actual.toFixed(3)}
                                     InputProps={{
-                                        inputProps: {
-                                            min: -273.15,
-                                            max: 500,
-                                            step: 0.01,
-                                            style: { fontSize: 42 }
-                                        },
                                         endAdornment: (
                                             <InputAdornment
                                                 position="start"
@@ -134,13 +128,8 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                         </FormControl>
                     </div>
                 </div>
-                <div
-                    className={
-                        `${classes.chart} ` +
-                            (!(isCollectingData || heater.data.length) && classes.hidden) || ''
-                    }
-                >
-                    <LineChart height={500} data={heater.data} setpoint={setpoint} />
+                <div className={classes.chart}>
+                    <LineChart height={500} data={heater.data || []} setpoint={setpoint} />
                 </div>
             </div>
         );
