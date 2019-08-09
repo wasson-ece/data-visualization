@@ -48,3 +48,7 @@ export const reconcileHeaterRunParams = (heater: HeaterState, run: Run) => {
         if (run.isHoldingSetpoint) tiClient.sendSetpoint(Number(heater.id), Number(run.setpoint));
     }
 };
+
+const MAX_PID_OUTPUT = 2.0e16;
+export const pidOutputPercent = (output: number): string | number =>
+    (100 * output) / MAX_PID_OUTPUT;

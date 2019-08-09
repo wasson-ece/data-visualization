@@ -164,6 +164,7 @@ class Root extends React.Component<RootProps> {
         let res = await tiClient.getGCStatus();
         const [tiComponents, methodStatus] = decodeGCStatus(res);
         let heaters: Heater[] = [];
+
         (tiComponents as HeaterComponent[]).forEach((component: HeaterComponent) => {
             heaters.push({
                 id: String(component.id),
@@ -172,7 +173,7 @@ class Root extends React.Component<RootProps> {
                 kp: Number(component.pidTune.kp.toFixed(0)),
                 ki: Number(component.pidTune.ki.toFixed(0)),
                 kd: Number(component.pidTune.kd.toFixed(0)),
-                output: 0,
+                output: component.output,
                 data: []
             });
         });
@@ -257,7 +258,7 @@ const mapState = (state: RootState) => ({
 const styles = {
     root: {
         display: 'grid',
-        gridTemplateColumns: 'min-content 1fr',
+        gridTemplateColumns: 'auto 1fr',
         height: '100%',
         minHeight: '100vh'
     }

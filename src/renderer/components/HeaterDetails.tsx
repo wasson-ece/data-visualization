@@ -30,6 +30,11 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
         super(props);
     }
 
+    shouldComponentUpdate = (nextProps: HeaterDetailsProps) =>
+        nextProps.currentRun !== this.props.currentRun ||
+        nextProps.heater !== this.props.heater ||
+        nextProps.isCollectingData !== this.props.isCollectingData;
+
     handleSendKpParameter = async (value: number) => {
         await tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetPVal, value);
     };
@@ -47,7 +52,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
     };
 
     render = () => {
-        const { heater, classes, onChangeLabel, isCollectingData, currentRun } = this.props;
+        const { heater, classes, onChangeLabel, currentRun } = this.props;
         let setpoint: number | undefined = undefined;
         if (currentRun && currentRun.isEquilibrating) setpoint = Number(currentRun.baseline);
         else if (currentRun && currentRun.isHoldingSetpoint) setpoint = Number(currentRun.setpoint);
@@ -69,12 +74,6 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                                     type="number"
                                     value={heater.actual && heater.actual.toFixed(3)}
                                     InputProps={{
-                                        inputProps: {
-                                            min: -273.15,
-                                            max: 500,
-                                            step: 0.01,
-                                            style: { fontSize: 42 }
-                                        },
                                         endAdornment: (
                                             <InputAdornment
                                                 position="start"
@@ -82,7 +81,12 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                                             >
                                                 <div>°C</div>
                                             </InputAdornment>
-                                        )
+                                        ),
+                                        inputProps: {
+                                            style: {
+                                                fontSize: 28
+                                            }
+                                        }
                                     }}
                                 />
                                 <ParameterControl
@@ -134,13 +138,8 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                         </FormControl>
                     </div>
                 </div>
-                <div
-                    className={
-                        `${classes.chart} ` +
-                            (!(isCollectingData || heater.data.length) && classes.hidden) || ''
-                    }
-                >
-                    <LineChart height={500} data={heater.data} setpoint={setpoint} />
+                <div className={classes.chart}>
+                    <LineChart height={500} data={heater.data || []} setpoint={setpoint} />
                 </div>
             </div>
         );
@@ -162,11 +161,17 @@ const styles = (theme: Theme) => ({
     formControl: {
         backgroundColor: '#424242',
         borderRadius: theme.shape.borderRadius,
-        padding: theme.spacing(2)
+        paddingTop: 0
     },
-    formLabel: { paddingLeft: theme.spacing(1), marginBottom: theme.spacing(1) },
+    formLabel: {
+        textAlign: 'center' as 'center',
+        backgroundColor: theme.palette.primary.main,
+        borderRadius: `${theme.shape.borderRadius}px  ${theme.shape.borderRadius}px 0 0`,
+        color: '#fff',
+        padding: theme.spacing(1)
+    },
     formGroup: {
-        paddingLeft: theme.spacing(2),
+        padding: theme.spacing(2),
         display: 'grid',
         gridGap: `${theme.spacing(3)}px 0px`
     },

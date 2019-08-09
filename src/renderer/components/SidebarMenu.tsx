@@ -78,7 +78,12 @@ interface SidebarMenuProps extends RouteComponentProps {
     onToggleDataCollection: () => void;
 }
 
-function SidebarMenu(props: SidebarMenuProps) {
+const arePropsEqual = (props: SidebarMenuProps, nextProps: SidebarMenuProps) =>
+    props.isCollectingData === nextProps.isCollectingData &&
+    props.heaters.length === nextProps.heaters.length &&
+    props.location.pathname === nextProps.location.pathname;
+
+const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
     const classes = useStyles();
     const [epcDrawerIsOpen, setEpcDrawerOpen] = React.useState(false);
     const [mfcDrawerIsOpen, setMfcDrawerOpen] = React.useState(false);
@@ -150,28 +155,14 @@ function SidebarMenu(props: SidebarMenuProps) {
                                 {dioDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={dioDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItem button className={classes.nested}>
-                                        <ListItemIcon>
-                                            <StarBorder />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItem>
-                                </List>
+                                <List component="div" disablePadding></List>
                             </Collapse>
                             <ListItem button onClick={handleClickEpcDrawer}>
                                 <ListItemText primary="Electronic Pressure (EPC)" />
                                 {epcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={epcDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItem button className={classes.nested}>
-                                        <ListItemIcon>
-                                            <StarBorder />
-                                        </ListItemIcon>
-                                        <ListItemText primary="EPCs Go Here, I Guess" />
-                                    </ListItem>
-                                </List>
+                                <List component="div" disablePadding></List>
                             </Collapse>
                             <ListItem button onClick={handleClickHeaterDrawer}>
                                 <ListItemText primary="Heaters" />
@@ -204,14 +195,7 @@ function SidebarMenu(props: SidebarMenuProps) {
                                 {mfcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={mfcDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItem button className={classes.nested}>
-                                        <ListItemIcon>
-                                            <StarBorder />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItem>
-                                </List>
+                                <List component="div" disablePadding></List>
                             </Collapse>
                         </List>
                         <Divider />
@@ -232,6 +216,6 @@ function SidebarMenu(props: SidebarMenuProps) {
             </nav>
         </div>
     );
-}
+}, arePropsEqual);
 
 export default withRouter(SidebarMenu);

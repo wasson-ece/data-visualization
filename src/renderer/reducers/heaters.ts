@@ -27,6 +27,7 @@ export const heaters: Reducer<HeaterState[], HeatersAction> = (
         case 'START_SETPOINT_HOLD':
         case 'EDIT_HEATER_RUN':
         case 'DELETE_RUN':
+        case 'CLEAR_FINISHED_RUNS':
             return state.map(h => (h.id !== action.id ? h : heater(h, action)));
         default:
             return state;

@@ -126,6 +126,11 @@ export const heater: Reducer<HeaterState, HeaterAction> = (
                 ...state,
                 runs: state.runs.map((r: Run, index) => (r.isRunning ? run(r, action) : r))
             };
+        case 'CLEAR_FINISHED_RUNS':
+            return {
+                ...state,
+                runs: state.runs.filter(r => !r.isFinished)
+            };
         default:
             return state;
     }

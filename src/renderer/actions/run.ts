@@ -41,6 +41,11 @@ export interface AbortRun extends Action {
     id: string;
 }
 
+export interface ClearFinishedRuns extends Action {
+    type: 'CLEAR_FINISHED_RUNS';
+    id: string;
+}
+
 export type RunAction =
     | EditHeaterRun
     | DeleteRun
