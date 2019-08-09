@@ -155,28 +155,14 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
                                 {dioDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={dioDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItem button className={classes.nested}>
-                                        <ListItemIcon>
-                                            <StarBorder />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItem>
-                                </List>
+                                <List component="div" disablePadding></List>
                             </Collapse>
                             <ListItem button onClick={handleClickEpcDrawer}>
                                 <ListItemText primary="Electronic Pressure (EPC)" />
                                 {epcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={epcDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItem button className={classes.nested}>
-                                        <ListItemIcon>
-                                            <StarBorder />
-                                        </ListItemIcon>
-                                        <ListItemText primary="EPCs Go Here, I Guess" />
-                                    </ListItem>
-                                </List>
+                                <List component="div" disablePadding></List>
                             </Collapse>
                             <ListItem button onClick={handleClickHeaterDrawer}>
                                 <ListItemText primary="Heaters" />
@@ -209,14 +195,7 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
                                 {mfcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={mfcDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItem button className={classes.nested}>
-                                        <ListItemIcon>
-                                            <StarBorder />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Starred" />
-                                    </ListItem>
-                                </List>
+                                <List component="div" disablePadding></List>
                             </Collapse>
                         </List>
                         <Divider />

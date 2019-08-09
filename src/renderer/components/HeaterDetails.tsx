@@ -81,7 +81,12 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                                             >
                                                 <div>°C</div>
                                             </InputAdornment>
-                                        )
+                                        ),
+                                        inputProps: {
+                                            style: {
+                                                fontSize: 28
+                                            }
+                                        }
                                     }}
                                 />
                                 <ParameterControl
@@ -162,7 +167,7 @@ const styles = (theme: Theme) => ({
         textAlign: 'center',
         backgroundColor: theme.palette.primary.main,
         borderRadius: `${theme.shape.borderRadius}px  ${theme.shape.borderRadius}px 0 0`,
-        color: 'rgba(0, 0, 0, 0.87)',
+        color: '#fff',
         padding: theme.spacing(1)
     },
     formGroup: {

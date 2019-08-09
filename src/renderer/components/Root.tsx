@@ -258,7 +258,7 @@ const mapState = (state: RootState) => ({
 const styles = {
     root: {
         display: 'grid',
-        gridTemplateColumns: 'min-content 1fr',
+        gridTemplateColumns: 'auto 1fr',
         height: '100%',
         minHeight: '100vh'
     }
