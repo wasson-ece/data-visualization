@@ -41,6 +41,12 @@ class LineChart extends React.Component<LineChartProps, LineChartState> {
         this.state = {};
     }
 
+    shouldComponentUpdate = (nextProps: LineChartProps, nextState: LineChartState) =>
+        nextProps.data !== this.props.data ||
+        nextProps.setpoint !== this.props.setpoint ||
+        nextProps.height !== this.props.height ||
+        nextState.drawBounds !== this.state.drawBounds;
+
     DEFAULT_HEIGHT = 300;
 
     tickFormat = (x: number) => {

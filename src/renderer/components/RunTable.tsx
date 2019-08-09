@@ -8,9 +8,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Run from '../../interfaces/Run';
 import HeaterRunRow from './HeaterRunRow';
-import { Button, Toolbar, TextField, FormLabel } from '@material-ui/core';
+import { Button, Toolbar } from '@material-ui/core';
 import { isRunValid } from '../reducers/run';
-import { remainingMinutes, minutesToString } from '../../util/heater-timing';
 import clsx from 'clsx';
 import { red } from '@material-ui/core/colors';
 
