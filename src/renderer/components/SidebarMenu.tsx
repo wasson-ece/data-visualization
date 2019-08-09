@@ -78,7 +78,12 @@ interface SidebarMenuProps extends RouteComponentProps {
     onToggleDataCollection: () => void;
 }
 
-function SidebarMenu(props: SidebarMenuProps) {
+const arePropsEqual = (props: SidebarMenuProps, nextProps: SidebarMenuProps) =>
+    props.isCollectingData === nextProps.isCollectingData &&
+    props.heaters.length === nextProps.heaters.length &&
+    props.location.pathname === nextProps.location.pathname;
+
+const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
     const classes = useStyles();
     const [epcDrawerIsOpen, setEpcDrawerOpen] = React.useState(false);
     const [mfcDrawerIsOpen, setMfcDrawerOpen] = React.useState(false);
@@ -232,6 +237,6 @@ function SidebarMenu(props: SidebarMenuProps) {
             </nav>
         </div>
     );
-}
+}, arePropsEqual);
 
 export default withRouter(SidebarMenu);

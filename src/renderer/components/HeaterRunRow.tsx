@@ -40,7 +40,12 @@ export interface RunRowProps {
     editHeaterRunRow: (heaterId: string, index: number, attribute: string, value: string) => void;
 }
 
-function HeaterRunRow(props: RunRowProps) {
+const areHeaterRunPropsEqual = (props: RunRowProps, nextProps: RunRowProps) =>
+    props.run === nextProps.run &&
+    props.heaterId === nextProps.heaterId &&
+    props.runIndex === nextProps.runIndex;
+
+const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
     const classes = useStyles();
     const { run, heaterId, runIndex, deleteHeaterRunRow, editHeaterRunRow } = props;
 
@@ -208,7 +213,7 @@ function HeaterRunRow(props: RunRowProps) {
             </TableCell>
         </TableRow>
     );
-}
+}, areHeaterRunPropsEqual);
 
 const useRunStatusStyles = makeStyles((theme: Theme) =>
     createStyles({

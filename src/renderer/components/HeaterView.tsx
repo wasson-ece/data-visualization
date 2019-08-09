@@ -9,6 +9,7 @@ import HeaterState from '../../interfaces/HeaterState';
 import { Dispatch } from 'redux';
 import { startNextRun, abourtRun } from '../actions/Run';
 import { updateHeaterAttributes, clearFinishedRuns } from '../actions/heater';
+import RunStatusPanel from './RunStatusPanel';
 
 interface HeaterRouteProps {
     id: string;
@@ -53,6 +54,9 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                             isCollectingData={isCollectingData}
                         />
                     )}
+                    <div className={classes.runStatusPanelContainer}>
+                        {heater && currentRun && <RunStatusPanel currentRun={currentRun} />}
+                    </div>
                     {heater && (
                         <RunTable
                             id={id}
@@ -86,6 +90,10 @@ const styles = (theme: Theme) => ({
     root: {},
     details: {
         padding: theme.spacing(3)
+    },
+    runStatusPanelContainer: {
+        display: 'grid',
+        justifyContent: 'center'
     }
 });
 

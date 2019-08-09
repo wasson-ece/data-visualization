@@ -48,13 +48,13 @@ const useStyles = makeStyles((theme: Theme) =>
             width: 200
         },
         kp: {
-            width: 80
+            width: 100
         },
         ki: {
-            width: 80
+            width: 100
         },
         kd: {
-            width: 80
+            width: 100
         },
         baselineTemp: { width: 160 },
         setpointTemp: { width: 160 },
@@ -62,91 +62,6 @@ const useStyles = makeStyles((theme: Theme) =>
         setpointHoldTime: { width: 160 }
     })
 );
-
-const useRunStatusPanelStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            padding: theme.spacing(2),
-            backgroundColor: lighten(theme.palette.background.default, 0.2),
-            borderLeft: `solid 4px ${theme.palette.primary.main}`,
-            borderRadius: theme.shape.borderRadius,
-            margin: theme.spacing(2, 0),
-            width: 'fit-content'
-        },
-        label: {
-            ...theme.typography.button,
-            marginBottom: theme.spacing(2),
-            display: 'block'
-        },
-        content: {
-            paddingLeft: theme.spacing(1)
-        },
-        statusTime: {
-            width: 'fit-content'
-        }
-    })
-);
-
-export interface CurrentRunProps {
-    currentRun: Run;
-}
-
-export const CurrentRunStatusPanel = (props: CurrentRunProps) => {
-    const classes = useRunStatusPanelStyles();
-    const { currentRun } = props;
-    const equilHoldTime = Number(currentRun.equilibrationTime);
-    const setpointHoldTime = Number(currentRun.setpointHoldTime);
-
-    const remainingEquilibrationTime: number = remainingMinutes(
-        currentRun.startTime,
-        equilHoldTime
-    );
-    const remainingSetpointHoldTime: number = remainingMinutes(
-        currentRun.startTime,
-        equilHoldTime + setpointHoldTime
-    );
-
-    return (
-        <div className={classes.root}>
-            <FormLabel className={classes.label}>Current Run Status</FormLabel>
-            <div className={classes.content}>
-                {(remainingEquilibrationTime > 0 && (
-                    <TextField
-                        label="Remaining Equil. Time"
-                        value={minutesToString(remainingEquilibrationTime)}
-                        disabled
-                        className={classes.statusTime}
-                        InputProps={{
-                            disableUnderline: true,
-                            inputProps: {
-                                style: { fontSize: 28, color: '#fff', width: 'fit-content' }
-                            }
-                        }}
-                    />
-                )) ||
-                    null}
-                {(remainingSetpointHoldTime > 0 && remainingEquilibrationTime < 0 && (
-                    <TextField
-                        label="Remaining Setpoint Time"
-                        value={minutesToString(remainingSetpointHoldTime)}
-                        disabled
-                        className={classes.statusTime}
-                        InputProps={{
-                            disableUnderline: true,
-                            inputProps: {
-                                style: { fontSize: 28, color: '#fff', width: 'fit-content' }
-                            }
-                        }}
-                    />
-                )) ||
-                    null}
-                {remainingEquilibrationTime <= 0 && remainingSetpointHoldTime <= 0 ? (
-                    <div>Run finished! ✔️</div>
-                ) : null}
-            </div>
-        </div>
-    );
-};
 
 export interface RunTableProps {
     id: string;
@@ -157,7 +72,12 @@ export interface RunTableProps {
     onClearFinishedRuns: () => void;
 }
 
-export default function RunTable(props: RunTableProps) {
+const areRunTablePropsEqual = (props: RunTableProps, nextProps: RunTableProps) =>
+    props.runs === nextProps.runs &&
+    props.currentRun === nextProps.currentRun &&
+    props.id === nextProps.id;
+
+export default React.memo(function RunTable(props: RunTableProps) {
     const classes = useStyles();
 
     const { runs, id, currentRun, onStopRuns, onStartRuns, onClearFinishedRuns } = props;
@@ -165,7 +85,6 @@ export default function RunTable(props: RunTableProps) {
     return (
         <Paper className={classes.root}>
             <Toolbar className={classes.statusContainer}>
-                {currentRun && <CurrentRunStatusPanel currentRun={currentRun} />}
                 <div className={classes.startRunBtnContainer}>
                     <Button onClick={onClearFinishedRuns} className={classes.dangerButton}>
                         Clear Finished Runs
@@ -217,4 +136,4 @@ export default function RunTable(props: RunTableProps) {
             </Table>
         </Paper>
     );
-}
+}, areRunTablePropsEqual);

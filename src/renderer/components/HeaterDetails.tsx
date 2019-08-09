@@ -30,6 +30,11 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
         super(props);
     }
 
+    shouldComponentUpdate = (nextProps: HeaterDetailsProps) =>
+        nextProps.currentRun !== this.props.currentRun ||
+        nextProps.heater !== this.props.heater ||
+        nextProps.isCollectingData !== this.props.isCollectingData;
+
     handleSendKpParameter = async (value: number) => {
         await tiClient.sendPIDParameter(Number(this.props.heater.id), Command.SetPVal, value);
     };
@@ -151,11 +156,17 @@ const styles = (theme: Theme) => ({
     formControl: {
         backgroundColor: '#424242',
         borderRadius: theme.shape.borderRadius,
-        padding: theme.spacing(2)
+        paddingTop: 0
     },
-    formLabel: { paddingLeft: theme.spacing(1), marginBottom: theme.spacing(1) },
+    formLabel: {
+        textAlign: 'center',
+        backgroundColor: theme.palette.primary.main,
+        borderRadius: `${theme.shape.borderRadius}px  ${theme.shape.borderRadius}px 0 0`,
+        color: 'rgba(0, 0, 0, 0.87)',
+        padding: theme.spacing(1)
+    },
     formGroup: {
-        paddingLeft: theme.spacing(2),
+        padding: theme.spacing(2),
         display: 'grid',
         gridGap: `${theme.spacing(3)}px 0px`
     },
