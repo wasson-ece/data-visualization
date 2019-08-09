@@ -47,7 +47,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
     };
 
     render = () => {
-        const { heater, classes, onChangeLabel, isCollectingData, currentRun } = this.props;
+        const { heater, classes, onChangeLabel, currentRun } = this.props;
         let setpoint: number | undefined = undefined;
         if (currentRun && currentRun.isEquilibrating) setpoint = Number(currentRun.baseline);
         else if (currentRun && currentRun.isHoldingSetpoint) setpoint = Number(currentRun.setpoint);

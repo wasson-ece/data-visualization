@@ -32,12 +32,18 @@ export interface SetHeaterRuns extends Action {
     runs: Run[];
 }
 
+export interface ClearFinishedRuns extends Action {
+    type: 'CLEAR_FINISHED_RUNS';
+    id: string;
+}
+
 export type HeaterAction =
     | UpdateHeaterAttributes
     | AddHeaterDatum
     | ClearHeaterData
     | RunAction
-    | SetHeaterRuns;
+    | SetHeaterRuns
+    | ClearFinishedRuns;
 
 export const addHeaterDatum: ActionCreator<AddHeaterDatum> = (id: string, datum: HeaterDatum) => ({
     type: 'ADD_HEATER_DATUM',
@@ -66,4 +72,9 @@ export const updateHeaterAttributes: ActionCreator<UpdateHeaterAttributes> = (
     type: 'UPDATE_HEATER_ATTRIBUTES',
     id,
     values
+});
+
+export const clearFinishedRuns: ActionCreator<ClearFinishedRuns> = (id: string) => ({
+    type: 'CLEAR_FINISHED_RUNS',
+    id
 });

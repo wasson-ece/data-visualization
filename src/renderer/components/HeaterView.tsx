@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import HeaterState from '../../interfaces/HeaterState';
 import { Dispatch } from 'redux';
 import { startNextRun, abourtRun } from '../actions/Run';
-import { updateHeaterAttributes } from '../actions/heater';
+import { updateHeaterAttributes, clearFinishedRuns } from '../actions/heater';
 
 interface HeaterRouteProps {
     id: string;
@@ -21,6 +21,7 @@ interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
     startNextRun: (heaterId: string) => void;
     abortCurrentRun: (heaterId: string) => void;
     onChangeHeaterLabel: (heaterId: string, label: string) => void;
+    clearFinishedRuns: (heaterId: string) => void;
 }
 
 interface HeaterViewState {}
@@ -59,6 +60,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                             currentRun={currentRun}
                             onStartRuns={() => this.props.startNextRun(heater.id)}
                             onStopRuns={() => this.props.abortCurrentRun(heater.id)}
+                            onClearFinishedRuns={() => this.props.clearFinishedRuns(heater.id)}
                         />
                     )}
                 </div>
@@ -76,7 +78,8 @@ const mapDispatch = (dispatch: Dispatch) => ({
     startNextRun: (heaterId: string) => dispatch(startNextRun(heaterId)),
     abortCurrentRun: (heaterId: string) => dispatch(abourtRun(heaterId)),
     onChangeHeaterLabel: (heaterId: string, label: string) =>
-        dispatch(updateHeaterAttributes(heaterId, { label }))
+        dispatch(updateHeaterAttributes(heaterId, { label })),
+    clearFinishedRuns: (heaterId: string) => dispatch(clearFinishedRuns(heaterId))
 });
 
 const styles = (theme: Theme) => ({

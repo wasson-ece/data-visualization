@@ -11,15 +11,18 @@ import HeaterRunRow from './HeaterRunRow';
 import { Button, Toolbar, TextField, FormLabel } from '@material-ui/core';
 import { isRunValid } from '../reducers/run';
 import { remainingMinutes, minutesToString } from '../../util/heater-timing';
+import clsx from 'clsx';
+import { red } from '@material-ui/core/colors';
 
 const hasValidRun = (runs: Run[]): boolean => runs.some(run => isRunValid(run));
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            width: '100%',
-            marginTop: theme.spacing(3),
-            overflowX: 'auto'
+            overflowX: 'auto',
+            width: 1000,
+            margin: '0 auto',
+            marginTop: theme.spacing(3)
         },
         table: {
             minWidth: 650
@@ -31,8 +34,32 @@ const useStyles = makeStyles((theme: Theme) =>
         startRunBtnContainer: {
             width: '100%',
             display: 'grid',
-            justifyItems: 'right'
-        }
+            justifyContent: 'end',
+            gridTemplateColumns: 'auto auto'
+        },
+        dangerButton: {
+            color: red[500],
+            marginRight: theme.spacing(2)
+        },
+        tableCell: {
+            padding: '8px 8px 8px 8px'
+        },
+        statusCell: {
+            width: 200
+        },
+        kp: {
+            width: 80
+        },
+        ki: {
+            width: 80
+        },
+        kd: {
+            width: 80
+        },
+        baselineTemp: { width: 160 },
+        setpointTemp: { width: 160 },
+        baselineHoldTime: { width: 160 },
+        setpointHoldTime: { width: 160 }
     })
 );
 
@@ -127,18 +154,22 @@ export interface RunTableProps {
     currentRun?: Run;
     onStartRuns: () => void;
     onStopRuns: () => void;
+    onClearFinishedRuns: () => void;
 }
 
 export default function RunTable(props: RunTableProps) {
     const classes = useStyles();
 
-    const { runs, id, currentRun, onStopRuns, onStartRuns } = props;
+    const { runs, id, currentRun, onStopRuns, onStartRuns, onClearFinishedRuns } = props;
 
     return (
         <Paper className={classes.root}>
             <Toolbar className={classes.statusContainer}>
                 {currentRun && <CurrentRunStatusPanel currentRun={currentRun} />}
                 <div className={classes.startRunBtnContainer}>
+                    <Button onClick={onClearFinishedRuns} className={classes.dangerButton}>
+                        Clear Finished Runs
+                    </Button>
                     <Button
                         disabled={!hasValidRun(runs)}
                         variant="outlined"
@@ -152,14 +183,25 @@ export default function RunTable(props: RunTableProps) {
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Kp</TableCell>
-                        <TableCell>Ki</TableCell>
-                        <TableCell>Kd</TableCell>
-                        <TableCell>Baseline Temperature (°C)</TableCell>
-                        <TableCell>Setpoint Temperature (°C)</TableCell>
-                        <TableCell>Equilibration Time (Minutes)</TableCell>
-                        <TableCell>Setpoint Hold Time (Minutes)</TableCell>
-                        <TableCell>Delete</TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.kp)}>Kp</TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.ki)}>Ki</TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.kd)}>Kd</TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.baselineTemp)}>
+                            Baseline Temperature (°C)
+                        </TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.setpointTemp)}>
+                            Setpoint Temperature (°C)
+                        </TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.baselineHoldTime)}>
+                            Equil. Hold Time (Minutes)
+                        </TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.setpointHoldTime)}>
+                            Setpoint Hold Time (Minutes)
+                        </TableCell>
+                        <TableCell className={classes.tableCell}>Delete</TableCell>
+                        <TableCell className={clsx(classes.tableCell, classes.statusCell)}>
+                            Status
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

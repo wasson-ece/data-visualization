@@ -12,9 +12,11 @@ import {
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
+import clsx from 'clsx';
 import Run from '../../interfaces/Run';
 import { deleteRun, editRunAttributes } from '../actions/run';
 import { isRunValid } from '../reducers/run';
+import { brown, red, grey, yellow } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -24,11 +26,8 @@ const useStyles = makeStyles((theme: Theme) =>
         running: {
             backgroundColor: 'rgb(89, 89, 89)'
         },
-        finished: {
-            backgroundColor: '#545a54'
-        },
-        invalid: {
-            backgroundColor: '#583a3a'
+        tableCell: {
+            padding: '8px 8px 8px 8px'
         }
     })
 );
@@ -70,12 +69,10 @@ function HeaterRunRow(props: RunRowProps) {
 
     let className = undefined;
     if (run.isRunning) className = classes.running;
-    if (run.isFinished) className = classes.finished;
-    if (run.isDirty && !isRunValid(run)) className = classes.invalid;
 
     return (
         <TableRow className={className}>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <TextField
                     margin="dense"
                     hiddenLabel
@@ -86,7 +83,7 @@ function HeaterRunRow(props: RunRowProps) {
                     disabled={run.isRunning}
                 />
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <TextField
                     margin="dense"
                     hiddenLabel
@@ -97,7 +94,7 @@ function HeaterRunRow(props: RunRowProps) {
                     disabled={run.isRunning}
                 />
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <TextField
                     margin="dense"
                     hiddenLabel
@@ -108,7 +105,7 @@ function HeaterRunRow(props: RunRowProps) {
                     disabled={run.isRunning}
                 />
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <TextField
                     value={run.baseline || ''}
                     variant="filled"
@@ -132,7 +129,7 @@ function HeaterRunRow(props: RunRowProps) {
                     }}
                 />
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <TextField
                     margin="dense"
                     hiddenLabel
@@ -155,7 +152,7 @@ function HeaterRunRow(props: RunRowProps) {
                     }}
                 />
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <TextField
                     margin="dense"
                     value={run.equilibrationTime || ''}
@@ -178,7 +175,7 @@ function HeaterRunRow(props: RunRowProps) {
                     }}
                 />
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <TextField
                     margin="dense"
                     value={run.setpointHoldTime || ''}
@@ -201,14 +198,71 @@ function HeaterRunRow(props: RunRowProps) {
                     }}
                 />
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.tableCell}>
                 <IconButton onClick={handleDeleteRow} disabled={run.isRunning}>
                     <DeleteForeverIcon />
                 </IconButton>
             </TableCell>
+            <TableCell className={classes.tableCell}>
+                <RunStatusTag run={run} />
+            </TableCell>
         </TableRow>
     );
 }
+
+const useRunStatusStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {},
+        statusCommon: {
+            ...theme.typography.button,
+            border: `solid 1px`,
+            borderRadius: theme.shape.borderRadius,
+            padding: theme.spacing(1),
+            width: 'fit-content'
+        },
+        isEquilibrating: {
+            color: brown[300],
+            borderColor: brown[300]
+        },
+        isHoldingSetpoint: {
+            color: yellow[300],
+            borderColor: yellow[300]
+        },
+        isFinished: {
+            color: theme.palette.primary.main,
+            borderColor: theme.palette.primary.main
+        },
+        isInvalid: { color: red[500], borderColor: red[500] },
+        isWaiting: { color: grey[500], borderColor: grey[500] }
+    })
+);
+
+interface RunStatusProps {
+    run: Run;
+}
+
+const RunStatusTag = (props: RunStatusProps) => {
+    let classes = useRunStatusStyles();
+    let content = null;
+    if (!props.run.isRunning)
+        content = <div className={clsx(classes.statusCommon, classes.isWaiting)}>Waiting</div>;
+    if (props.run.isEquilibrating)
+        content = (
+            <div className={clsx(classes.statusCommon, classes.isEquilibrating)}>Equilibrating</div>
+        );
+    if (props.run.isHoldingSetpoint)
+        content = (
+            <div className={clsx(classes.statusCommon, classes.isHoldingSetpoint)}>
+                Holding Setpoint
+            </div>
+        );
+    if (props.run.isFinished)
+        content = <div className={clsx(classes.statusCommon, classes.isFinished)}>Finished</div>;
+    if (props.run.isDirty && !isRunValid(props.run))
+        content = <div className={clsx(classes.statusCommon, classes.isInvalid)}>Invalid Run</div>;
+
+    return <div className={classes.root}>{content}</div>;
+};
 
 const mapDispatch = (dispatch: Dispatch) => ({
     deleteHeaterRunRow: (heaterId: string, index: number) => dispatch(deleteRun(heaterId, index)),
