@@ -164,7 +164,7 @@ const styles = (theme: Theme) => ({
         paddingTop: 0
     },
     formLabel: {
-        textAlign: 'center',
+        textAlign: 'center' as 'center',
         backgroundColor: theme.palette.primary.main,
         borderRadius: `${theme.shape.borderRadius}px  ${theme.shape.borderRadius}px 0 0`,
         color: '#fff',
