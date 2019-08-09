@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: '8px 8px 8px 8px'
         },
         statusCell: {
-            width: 200
+            width: 220
         },
         kp: {
             width: 100
