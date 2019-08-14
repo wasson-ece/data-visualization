@@ -72,6 +72,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                                     }}
                                     disabled
                                     type="number"
+                                    variant="outlined"
                                     value={heater.actual && heater.actual.toFixed(3)}
                                     InputProps={{
                                         endAdornment: (
@@ -91,9 +92,38 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                                 />
                                 <ParameterControl
                                     title="Setpoint"
-                                    current={heater.setpoint}
+                                    current={Number(heater.setpoint)}
                                     units="°C"
                                     onChangeSetpoint={this.handleSendSetpoint}
+                                />
+                                <TextField
+                                    label="Power Output"
+                                    className={classes.truncatedTextField}
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
+                                    disabled
+                                    type="number"
+                                    variant="outlined"
+                                    value={
+                                        heater.powerOutputPercent &&
+                                        (100 * heater.powerOutputPercent).toFixed(1)
+                                    }
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment
+                                                position="start"
+                                                className={classes.adornment}
+                                            >
+                                                <div>%</div>
+                                            </InputAdornment>
+                                        ),
+                                        inputProps: {
+                                            style: {
+                                                fontSize: 28
+                                            }
+                                        }
+                                    }}
                                 />
                             </FormGroup>
                         </FormControl>
@@ -102,19 +132,19 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                             <FormGroup className={classes.formGroup}>
                                 <ParameterControl
                                     title="Kp"
-                                    current={heater.kp}
+                                    current={Number(heater.kp)}
                                     units=""
                                     onChangeSetpoint={this.handleSendKpParameter}
                                 />
                                 <ParameterControl
                                     title="Ki"
-                                    current={heater.ki}
+                                    current={Number(heater.ki)}
                                     units=""
                                     onChangeSetpoint={this.handleSendKiParameter}
                                 />
                                 <ParameterControl
                                     title="Kd"
-                                    current={heater.kd}
+                                    current={Number(heater.kd)}
                                     units=""
                                     onChangeSetpoint={this.handleSendKdParameter}
                                 />

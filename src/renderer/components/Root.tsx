@@ -59,7 +59,8 @@ interface RootProps extends RouteComponentProps {
         ki: number,
         kd: number,
         setpoint: number,
-        actual: number
+        actual: number,
+        powerOutputPercent: number
     ) => void;
     toggleDataCollection: () => void;
     startOvenEquilibration: (ovenId: string) => void;
@@ -164,7 +165,7 @@ class Root extends React.Component<RootProps> {
     refreshData = async () => {
         let heaters = await this.getData();
         heaters.forEach(h => {
-            let heater = this.props.heaters.find(cur => cur.id === h.id);
+            let heater = this.props.heaters.find(cur => String(cur.id) === String(h.id));
 
             if (!heater) return;
             let datum: HeaterDatum = {
@@ -179,7 +180,8 @@ class Root extends React.Component<RootProps> {
                 Number(h.ki),
                 Number(h.kd),
                 Number(h.setpoint),
-                Number(h.actual)
+                Number(h.actual),
+                Number(h.powerOutputPercent)
             );
             this.props.addDatum(String(heater.id), datum);
         });
@@ -270,8 +272,9 @@ const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) =
         ki: number,
         kd: number,
         setpoint: number,
-        actual: number
-    ) => dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual })),
+        actual: number,
+        powerOutputPercent: number
+    ) => dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual, powerOutputPercent })),
     updateHeaterLabel: (id: string, label: string) =>
         dispatch(updateHeaterAttributes(id, { label })),
     toggleDataCollection: () => dispatch(toggleDataCollection()),

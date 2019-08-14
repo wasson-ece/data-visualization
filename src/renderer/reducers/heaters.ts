@@ -18,7 +18,12 @@ export const heaters: Reducer<HeaterState[], HeatersAction> = (
         case 'UPDATE_HEATER_ATTRIBUTES':
             return state.map(h => heater(h, action));
         case 'SET_HEATERS':
-            return action.heaters.map(h => ({ ...h, runs: [defaultRunState()], label: '' }));
+            return action.heaters.map(h => ({
+                ...h,
+                runs: [defaultRunState()],
+                label: '',
+                data: []
+            }));
         case 'ABORT_CURRENT_RUN':
         case 'FINISH_CURRENT_RUN':
         case 'START_NEXT_RUN':

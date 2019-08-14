@@ -62,9 +62,11 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                             id={id}
                             runs={heater.runs}
                             currentRun={currentRun}
-                            onStartRuns={() => this.props.startNextRun(heater.id)}
-                            onStopRuns={() => this.props.abortCurrentRun(heater.id)}
-                            onClearFinishedRuns={() => this.props.clearFinishedRuns(heater.id)}
+                            onStartRuns={() => this.props.startNextRun(String(heater.id))}
+                            onStopRuns={() => this.props.abortCurrentRun(String(heater.id))}
+                            onClearFinishedRuns={() =>
+                                this.props.clearFinishedRuns(String(heater.id))
+                            }
                         />
                     )}
                 </div>

@@ -4,7 +4,6 @@ import HeaterState from '../../interfaces/HeaterState';
 import { HeaterAction } from '../actions/heater';
 import { run, defaultRunState } from './run';
 import { isRunValid } from './run';
-import deepCopy from '../../util/deep-copy';
 import Run from '../../interfaces/Run';
 
 const defaultHeaterState: HeaterState = {
@@ -12,12 +11,13 @@ const defaultHeaterState: HeaterState = {
     kp: NaN,
     ki: NaN,
     kd: NaN,
-    output: NaN,
+    powerOutputPercent: NaN,
     data: [],
     id: '',
     actual: NaN,
     setpoint: NaN,
-    label: ''
+    label: '',
+    frequency: NaN
 };
 
 export const heater: Reducer<HeaterState, HeaterAction> = (
