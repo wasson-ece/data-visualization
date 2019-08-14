@@ -2,6 +2,7 @@ import HeaterState from '../interfaces/HeaterState';
 import Run from '../interfaces/Run';
 import { tiClient } from '../ti-communication/ti';
 import Command from 'node-ti/build/enums/command';
+import HeaterController from 'node-ti/build/ti-components/heater-controller';
 
 export const findActiveRun = (heater: HeaterState) => heater.runs.find(r => r.isRunning);
 
@@ -15,13 +16,13 @@ export const areHeaterParamsWithinTolerance = (heater: HeaterState, run: Run) =>
     isSetpointWithinTolerance(heater, run);
 
 const isKpWithinTolerance = (heater: HeaterState, run: Run): boolean =>
-    Math.abs(heater.kp - Number(run.kp)) < PID_TUNE_TOLERANCE;
+    Math.abs(Number(heater.kp) - Number(run.kp)) < PID_TUNE_TOLERANCE;
 
 const isKiWithinTolerance = (heater: HeaterState, run: Run): boolean =>
-    Math.abs(heater.ki - Number(run.ki)) < PID_TUNE_TOLERANCE;
+    Math.abs(Number(heater.ki) - Number(run.ki)) < PID_TUNE_TOLERANCE;
 
 const isKdWithinTolerance = (heater: HeaterState, run: Run): boolean =>
-    Math.abs(heater.ki - Number(run.ki)) < PID_TUNE_TOLERANCE;
+    Math.abs(Number(heater.ki) - Number(run.ki)) < PID_TUNE_TOLERANCE;
 
 const isSetpointWithinTolerance = (heater: HeaterState, run: Run): boolean => {
     if (run.isEquilibrating)
@@ -49,6 +50,6 @@ export const reconcileHeaterRunParams = (heater: HeaterState, run: Run) => {
     }
 };
 
-const MAX_PID_OUTPUT = 2.0e16;
-export const pidOutputPercent = (output: number): string | number =>
-    (100 * output) / MAX_PID_OUTPUT;
+export const pidOutputPercent = (output: number): string | number => 100 * output;
+
+export const isHeaterComponent = (object: any): object is HeaterController => 'kp' in object;

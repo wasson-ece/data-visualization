@@ -1,10 +1,6 @@
-import ControllerComponent from './ControllerComponent';
 import HeaterDatum from './HeaterDatum';
+import HeaterComponent from 'node-ti/build/ti-components/heater-component';
 
-export default interface Heater extends ControllerComponent {
-    kp: number;
-    ki: number;
-    kd: number;
-    output: number;
+export default interface Heater extends HeaterComponent {
     data: HeaterDatum[];
 }

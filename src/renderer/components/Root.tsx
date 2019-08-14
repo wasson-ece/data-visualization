@@ -1,7 +1,6 @@
 import * as React from 'react';
 import SidebarMenu from './SidebarMenu';
 import { decodeGCStatus } from 'node-ti/build/lib/parse/parse-ti-response';
-import HeaterComponent from 'node-ti/build/ti-components/heater-component';
 import { withStyles } from '@material-ui/core';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
@@ -28,7 +27,8 @@ import HeaterDatum from '../../interfaces/HeaterDatum';
 import {
     findActiveRun,
     areHeaterParamsWithinTolerance,
-    reconcileHeaterRunParams
+    reconcileHeaterRunParams,
+    isHeaterComponent
 } from '../../util/heater-run';
 import {
     isDoneEquilibrating,
@@ -47,10 +47,11 @@ import {
     isUnfinishedRun
 } from '../../middleware/persist-runs';
 import { OvenLabels, persistOvenLabels } from '../../middleware/persist-oven-labels';
+import HeaterController from 'node-ti/build/ti-components/heater-controller';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
-    setHeaterBoards: (detectors: Heater[]) => void;
+    setHeaterBoards: (detectors: HeaterController[]) => void;
     addDatum: (id: string, datum: HeaterDatum) => void;
     updateHeater: (
         id: string,
@@ -111,14 +112,14 @@ class Root extends React.Component<RootProps> {
                 reconcileHeaterRunParams(heater, activeRun);
             } else {
                 if (isReadyToStartRun(activeRun)) {
-                    startOvenEquilibration(heater.id);
+                    startOvenEquilibration(String(heater.id));
                 } else if (isDoneEquilibrating(activeRun)) {
-                    startOvenSetpointHold(heater.id);
+                    startOvenSetpointHold(String(heater.id));
                 } else if (isDoneHoldingSetpoint(activeRun)) {
-                    finishOvenRun(heater.id);
-                    startNextOvenRun(heater.id);
+                    finishOvenRun(String(heater.id));
+                    startNextOvenRun(String(heater.id));
                     // Wait before clearing out previous run's data
-                    setTimeout(() => clearRunData(heater.id, activeRun!.uuid), 5000);
+                    setTimeout(() => clearRunData(String(heater.id), activeRun!.uuid), 5000);
                 }
             }
         });
@@ -168,29 +169,37 @@ class Root extends React.Component<RootProps> {
             if (!heater) return;
             let datum: HeaterDatum = {
                 x: Date.now(),
-                y: h.actual,
+                y: Number(h.actual),
+                powerOutputPercent: h.powerOutputPercent,
                 runId: (heater && heater.currentRun) || ''
             };
-            this.props.updateHeater(heater.id, h.kp, h.ki, h.kd, h.setpoint, h.actual);
-            this.props.addDatum(heater.id, datum);
+            this.props.updateHeater(
+                String(heater.id),
+                Number(h.kp),
+                Number(h.ki),
+                Number(h.kd),
+                Number(h.setpoint),
+                Number(h.actual)
+            );
+            this.props.addDatum(String(heater.id), datum);
         });
     };
 
-    getData = async (): Promise<Heater[]> => {
+    getData = async (): Promise<HeaterController[]> => {
         let res = await tiClient.getGCStatus();
         const [tiComponents, methodStatus] = decodeGCStatus(res);
-        let heaters: Heater[] = [];
+        let heaters: HeaterController[] = [];
 
-        (tiComponents as HeaterComponent[]).forEach((component: HeaterComponent) => {
+        tiComponents.filter(isHeaterComponent).forEach((component: HeaterController) => {
             heaters.push({
                 id: String(component.id),
-                setpoint: Number(component.setpoint.toFixed(2)),
-                actual: component.temperature,
-                kp: Number(component.pidTune.kp.toFixed(0)),
-                ki: Number(component.pidTune.ki.toFixed(0)),
-                kd: Number(component.pidTune.kd.toFixed(0)),
-                output: component.output,
-                data: []
+                setpoint: Number(component.setpoint).toFixed(2),
+                actual: component.actual,
+                kp: Number(component.kp).toFixed(0),
+                ki: Number(component.ki).toFixed(0),
+                kd: Number(component.kd).toFixed(0),
+                powerOutputPercent: component.powerOutputPercent,
+                frequency: component.frequency
             });
         });
 
@@ -252,7 +261,7 @@ class Root extends React.Component<RootProps> {
 }
 
 const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) => ({
-    setHeaterBoards: (heaters: Heater[]) => dispatch(setHeaters(heaters)),
+    setHeaterBoards: (heaters: HeaterController[]) => dispatch(setHeaters(heaters)),
     setHeaterBoardRuns: (id: string, runs: Run[]) => dispatch(setHeaterRuns(id, runs)),
     addDatum: (id: string, datum: HeaterDatum) => dispatch(addHeaterDatum(id, datum)),
     updateHeater: (
