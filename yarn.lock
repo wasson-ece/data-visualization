@@ -1477,9 +1477,9 @@
   integrity sha512-xXD08vZsvpv4xptQXj1+ky22f7ZoKu5ZNI/4l+/BXG3X+XaeZsmaFbbTKuhSE3NjjvRuZFxFf9sQBMXIcZNFMQ==
 
 "@types/node@^12.6.8":
-  version "12.7.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.1.tgz#3b5c3a26393c19b400844ac422bd0f631a94d69d"
-  integrity sha512-aK9jxMypeSrhiYofWWBf/T7O+KwaiAHzM4sveCdWPn71lzUSMimRnKzhXDKfKwV1kWoBo2P1aGgaIYGLf9/ljw==
+  version "12.7.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.2.tgz#c4e63af5e8823ce9cc3f0b34f7b998c2171f0c44"
+  integrity sha512-dyYO+f6ihZEtNPDcWNR1fkoTDf3zAK3lAABDze3mz6POyIercH0lEUawUFXlG8xaQZmm1yEBON/4TsYv/laDYg==
 
 "@types/prop-types@*":
   version "15.7.1"
@@ -7854,7 +7854,7 @@ node-sass@^4.12.0:
 
 "node-ti@git+ssh://git@github.com:wasson-ece/node-ti.git":
   version "0.0.2"
-  resolved "git+ssh://git@github.com:wasson-ece/node-ti.git#83c026cf2da5ed3cbb5a1c78af77b4a610254816"
+  resolved "git+ssh://git@github.com:wasson-ece/node-ti.git#f5c0ebeb3d26d65f0e94d7daf51ea757d4bc19c5"
   dependencies:
     "@types/ini" "^1.3.30"
     "@types/node" "^12.6.8"

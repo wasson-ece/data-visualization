@@ -160,9 +160,21 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
                             <FormLabel className={classes.menuLabel}>Controllers</FormLabel>
                         </div>
                         <List>
+                            <ListItem button>
+                                <Link
+                                    to={`/components/${ControllerSidebarItem.Analog}`}
+                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    <ListItemText primary="Analog" />
+                                </Link>
+                            </ListItem>
                             <ListItem button onClick={handleClickDioDrawer}>
-                                <ListItemText primary="Digital I/O (DIO)" />
-                                {dioDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
+                                <Link
+                                    to={`/controllers/${ControllerSidebarItem['Digital I/O (DIO)']}`}
+                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    <ListItemText primary="Digital I/O (DIO)" />
+                                </Link>
                             </ListItem>
                             <Collapse in={dioDrawerIsOpen} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding></List>

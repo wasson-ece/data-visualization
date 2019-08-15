@@ -7,6 +7,7 @@ import { isRunValid } from './run';
 import Run from '../../interfaces/Run';
 
 const defaultHeaterState: HeaterState = {
+    type: 'heater',
     runs: [defaultRunState()],
     kp: NaN,
     ki: NaN,

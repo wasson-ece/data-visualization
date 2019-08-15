@@ -5,6 +5,7 @@ enum DetectorSidebarItem {
 }
 
 enum ControllerSidebarItem {
+    'Analog' = 'Analog',
     'Digital I/O (DIO)' = 'DIO',
     'Electronic Pressure (EPC)' = 'EPC',
     'Mass Flow (MFC)' = 'MFC',

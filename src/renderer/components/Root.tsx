@@ -4,8 +4,8 @@ import { decodeGCStatus } from 'node-ti/build/lib/parse/parse-ti-response';
 import { withStyles } from '@material-ui/core';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { setHeaters, HeatersAction } from '../actions/heaters';
-import { RootState } from '../reducers';
+import { setHeaters } from '../actions/heaters';
+import { RootState, RootAction } from '../reducers';
 import { withRouter, Route, RouteComponentProps } from 'react-router-dom';
 import HeaterView from './HeaterView';
 import { ControllerSidebarItem } from '../../enums/SidebarItems';
@@ -14,7 +14,6 @@ import EpcView from './EpcView';
 import MfcView from './MfcView';
 import { tiClient } from '../../ti-communication/ti';
 import { toggleDataCollection, DataCollectionAction } from '../actions/dataCollection';
-import Heater from '../../interfaces/Heater';
 import {
     addHeaterDatum,
     updateHeaterAttributes,
@@ -48,10 +47,24 @@ import {
 } from '../../middleware/persist-runs';
 import { OvenLabels, persistOvenLabels } from '../../middleware/persist-oven-labels';
 import HeaterController from 'node-ti/build/ti-components/heater-controller';
+import TIComponent from 'node-ti/build/ti-components/ti-component';
+import { setMfcs } from '../actions/mfcs';
+import MfcController from 'node-ti/build/ti-components/mfc-controller';
+import EpcController from 'node-ti/build/ti-components/epc-controller';
+import { setEpcs } from '../actions/epcs';
+import { setDioReadings } from '../actions/dio';
+import { setAnalogReadings } from '../actions/analog';
+import { separateTiComponents } from '../../util/ti';
+import mockData from '../../../mocks/ti-response';
+import AnalogView from './AnalogView';
 
 interface RootProps extends RouteComponentProps {
     classes: any;
     setHeaterBoards: (detectors: HeaterController[]) => void;
+    setMfcs: (mfcs: MfcController[]) => void;
+    setEpcs: (epcs: EpcController[]) => void;
+    setDioReadings: (readings: boolean[]) => void;
+    setAnalogReadings: (readings: number[]) => void;
     addDatum: (id: string, datum: HeaterDatum) => void;
     updateHeater: (
         id: string,
@@ -153,17 +166,29 @@ class Root extends React.Component<RootProps> {
     };
 
     fetchComponents = async () => {
-        await tiClient.connect();
+        /* Fetch data */
+        // await tiClient.connect();
+        // let components = await this.getData();
+        let [components, gcStatus] = decodeGCStatus(mockData);
 
-        let heaters = await this.getData();
+        /* Parse result into the constituent Ti components */
+        const { heaters, epcs, mfcs, analog, dio } = separateTiComponents(components);
 
+        /* Update state with this information */
         this.props.setHeaterBoards(heaters);
+        this.props.setEpcs(epcs);
+        this.props.setMfcs(mfcs);
+        analog && this.props.setAnalogReadings(analog.readings);
+        dio && this.props.setDioReadings(dio.readings);
+
+        /* If we set heater board meta data, retrieve that from local storage */
         this.hydrateHeaterBoardRuns();
         this.hydrateHeaterLabels();
     };
 
     refreshData = async () => {
-        let heaters = await this.getData();
+        let components = await this.getData();
+        const { heaters, epcs, mfcs, analog, dio } = separateTiComponents(components);
         heaters.forEach(h => {
             let heater = this.props.heaters.find(cur => String(cur.id) === String(h.id));
 
@@ -187,25 +212,10 @@ class Root extends React.Component<RootProps> {
         });
     };
 
-    getData = async (): Promise<HeaterController[]> => {
+    getData = async (): Promise<TIComponent[]> => {
         let res = await tiClient.getGCStatus();
         const [tiComponents, methodStatus] = decodeGCStatus(res);
-        let heaters: HeaterController[] = [];
-
-        tiComponents.filter(isHeaterComponent).forEach((component: HeaterController) => {
-            heaters.push({
-                id: String(component.id),
-                setpoint: Number(component.setpoint).toFixed(2),
-                actual: component.actual,
-                kp: Number(component.kp).toFixed(0),
-                ki: Number(component.ki).toFixed(0),
-                kd: Number(component.kd).toFixed(0),
-                powerOutputPercent: component.powerOutputPercent,
-                frequency: component.frequency
-            });
-        });
-
-        return heaters;
+        return tiComponents;
     };
 
     hydrateHeaterBoardRuns = () => {
@@ -242,6 +252,10 @@ class Root extends React.Component<RootProps> {
                         component={HeaterView}
                     />
                     <Route
+                        path={`/components/${ControllerSidebarItem.Analog}/:id`}
+                        component={AnalogView}
+                    />
+                    <Route
                         exact
                         path={`/controllers/${ControllerSidebarItem['Digital I/O (DIO)']}`}
                         component={DioView}
@@ -262,9 +276,13 @@ class Root extends React.Component<RootProps> {
     };
 }
 
-const mapDispatch = (dispatch: Dispatch<HeatersAction | DataCollectionAction>) => ({
+const mapDispatch = (dispatch: Dispatch<RootAction | DataCollectionAction>) => ({
     setHeaterBoards: (heaters: HeaterController[]) => dispatch(setHeaters(heaters)),
     setHeaterBoardRuns: (id: string, runs: Run[]) => dispatch(setHeaterRuns(id, runs)),
+    setMfcs: (mfcs: MfcController[]) => dispatch(setMfcs(mfcs)),
+    setEpcs: (epcs: EpcController[]) => dispatch(setEpcs(epcs)),
+    setDioReadings: (readings: boolean[]) => dispatch(setDioReadings(readings)),
+    setAnalogReadings: (readings: number[]) => dispatch(setAnalogReadings(readings)),
     addDatum: (id: string, datum: HeaterDatum) => dispatch(addHeaterDatum(id, datum)),
     updateHeater: (
         id: string,
