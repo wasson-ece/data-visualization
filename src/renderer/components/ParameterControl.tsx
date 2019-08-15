@@ -50,7 +50,7 @@ class ParameterControl extends React.Component<ParameterControlProps, ParameterC
                         shrink: true
                     }}
                     type="number"
-                    variant="filled"
+                    variant="outlined"
                     value={isDirty ? newSetpointValue : current}
                     InputProps={{
                         inputProps: {

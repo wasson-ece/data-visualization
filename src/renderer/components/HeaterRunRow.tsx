@@ -81,7 +81,7 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
                 <TextField
                     margin="dense"
                     hiddenLabel
-                    variant="filled"
+                    variant="outlined"
                     value={run.kp || ''}
                     onChange={handleChangeKpValue}
                     placeholder="Kp"
@@ -93,7 +93,7 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
                     margin="dense"
                     hiddenLabel
                     value={run.ki || ''}
-                    variant="filled"
+                    variant="outlined"
                     onChange={handleChangeKiValue}
                     placeholder="Ki"
                     disabled={run.isRunning}
@@ -104,7 +104,7 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
                     margin="dense"
                     hiddenLabel
                     value={run.kd || ''}
-                    variant="filled"
+                    variant="outlined"
                     onChange={handleChangeKdValue}
                     placeholder="Kd"
                     disabled={run.isRunning}
@@ -113,7 +113,7 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
             <TableCell className={classes.tableCell}>
                 <TextField
                     value={run.baseline || ''}
-                    variant="filled"
+                    variant="outlined"
                     margin="dense"
                     hiddenLabel
                     placeholder="Baseline"
@@ -140,7 +140,7 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
                     hiddenLabel
                     value={run.setpoint || ''}
                     onChange={handleChangeSetpointValue}
-                    variant="filled"
+                    variant="outlined"
                     placeholder="Setpoint"
                     disabled={run.isRunning}
                     InputProps={{
@@ -162,7 +162,7 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
                     margin="dense"
                     value={run.equilibrationTime || ''}
                     onChange={handleChangeEquilibrationValue}
-                    variant="filled"
+                    variant="outlined"
                     hiddenLabel
                     disabled={run.isRunning}
                     placeholder="Equilibration Time"
@@ -185,7 +185,7 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
                     margin="dense"
                     value={run.setpointHoldTime || ''}
                     onChange={handleChangeHoldTimeValue}
-                    variant="filled"
+                    variant="outlined"
                     hiddenLabel
                     placeholder="Setpoint Hold Time"
                     disabled={run.isRunning}

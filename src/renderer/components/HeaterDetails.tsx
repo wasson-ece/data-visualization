@@ -107,7 +107,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                                     variant="outlined"
                                     value={
                                         heater.powerOutputPercent &&
-                                        (100 * heater.powerOutputPercent).toFixed(1)
+                                        (100 * heater.powerOutputPercent).toFixed(2)
                                     }
                                     InputProps={{
                                         endAdornment: (
@@ -155,6 +155,7 @@ class HeaterDetails extends React.Component<HeaterDetailsProps, HeaterDetailsSta
                             <FormGroup className={classes.formGroup}>
                                 <TextField
                                     label="Heater Identifier"
+                                    variant="outlined"
                                     value={heater.label}
                                     onChange={onChangeLabel}
                                     className={classes.truncatedTextField}
