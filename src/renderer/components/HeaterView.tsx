@@ -19,10 +19,10 @@ interface HeaterViewProps extends RouteComponentProps<HeaterRouteProps> {
     heaters: HeaterState[];
     isCollectingData: boolean;
     classes: any;
-    startNextRun: (heaterId: string) => void;
-    abortCurrentRun: (heaterId: string) => void;
-    onChangeHeaterLabel: (heaterId: string, label: string) => void;
-    clearFinishedRuns: (heaterId: string) => void;
+    startNextRun: (heaterId: number) => void;
+    abortCurrentRun: (heaterId: number) => void;
+    onChangeHeaterLabel: (heaterId: number, label: string) => void;
+    clearFinishedRuns: (heaterId: number) => void;
 }
 
 interface HeaterViewState {}
@@ -34,7 +34,7 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
     }
 
     handleChangeHeaterLabel = (e: React.ChangeEvent<HTMLInputElement>) =>
-        this.props.onChangeHeaterLabel(this.props.match.params.id, e.target.value);
+        this.props.onChangeHeaterLabel(Number(this.props.match.params.id), e.target.value);
 
     render = () => {
         const { heaters, classes, isCollectingData } = this.props;
@@ -62,10 +62,10 @@ class HeaterView extends React.Component<HeaterViewProps, HeaterViewState> {
                             id={id}
                             runs={heater.runs}
                             currentRun={currentRun}
-                            onStartRuns={() => this.props.startNextRun(String(heater.id))}
-                            onStopRuns={() => this.props.abortCurrentRun(String(heater.id))}
+                            onStartRuns={() => this.props.startNextRun(Number(heater.id))}
+                            onStopRuns={() => this.props.abortCurrentRun(Number(heater.id))}
                             onClearFinishedRuns={() =>
-                                this.props.clearFinishedRuns(String(heater.id))
+                                this.props.clearFinishedRuns(Number(heater.id))
                             }
                         />
                     )}
@@ -81,11 +81,11 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({
-    startNextRun: (heaterId: string) => dispatch(startNextRun(heaterId)),
-    abortCurrentRun: (heaterId: string) => dispatch(abourtRun(heaterId)),
-    onChangeHeaterLabel: (heaterId: string, label: string) =>
+    startNextRun: (heaterId: number) => dispatch(startNextRun(heaterId)),
+    abortCurrentRun: (heaterId: number) => dispatch(abourtRun(heaterId)),
+    onChangeHeaterLabel: (heaterId: number, label: string) =>
         dispatch(updateHeaterAttributes(heaterId, { label })),
-    clearFinishedRuns: (heaterId: string) => dispatch(clearFinishedRuns(heaterId))
+    clearFinishedRuns: (heaterId: number) => dispatch(clearFinishedRuns(heaterId))
 });
 
 const styles = (theme: Theme) => ({

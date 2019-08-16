@@ -26,8 +26,7 @@ import HeaterDatum from '../../interfaces/HeaterDatum';
 import {
     findActiveRun,
     areHeaterParamsWithinTolerance,
-    reconcileHeaterRunParams,
-    isHeaterComponent
+    reconcileHeaterRunParams
 } from '../../util/heater-run';
 import {
     isDoneEquilibrating,
@@ -65,9 +64,9 @@ interface RootProps extends RouteComponentProps {
     setEpcs: (epcs: EpcController[]) => void;
     setDioReadings: (readings: boolean[]) => void;
     setAnalogReadings: (readings: number[]) => void;
-    addDatum: (id: string, datum: HeaterDatum) => void;
+    addDatum: (id: number, datum: HeaterDatum) => void;
     updateHeater: (
-        id: string,
+        id: number,
         kp: number,
         ki: number,
         kd: number,
@@ -76,14 +75,16 @@ interface RootProps extends RouteComponentProps {
         powerOutputPercent: number
     ) => void;
     toggleDataCollection: () => void;
-    startOvenEquilibration: (ovenId: string) => void;
-    startOvenSetpointHold: (ovenId: string) => void;
-    finishOvenRun: (ovenId: string) => void;
-    startNextOvenRun: (id: string) => void;
-    clearRunData: (heaterId: string, runId: string) => void;
-    setHeaterBoardRuns: (id: string, runs: Run[]) => void;
-    updateHeaterLabel: (id: string, label: string) => void;
+    startOvenEquilibration: (ovenId: number) => void;
+    startOvenSetpointHold: (ovenId: number) => void;
+    finishOvenRun: (ovenId: number) => void;
+    startNextOvenRun: (id: number) => void;
+    clearRunData: (heaterId: number, runId: string) => void;
+    setHeaterBoardRuns: (id: number, runs: Run[]) => void;
+    updateHeaterLabel: (id: number, label: string) => void;
     heaters: HeaterState[];
+    epcs: EpcController[];
+    mfcs: MfcController[];
     isCollectingData: boolean;
 }
 
@@ -126,14 +127,14 @@ class Root extends React.Component<RootProps> {
                 reconcileHeaterRunParams(heater, activeRun);
             } else {
                 if (isReadyToStartRun(activeRun)) {
-                    startOvenEquilibration(String(heater.id));
+                    startOvenEquilibration(Number(heater.id));
                 } else if (isDoneEquilibrating(activeRun)) {
-                    startOvenSetpointHold(String(heater.id));
+                    startOvenSetpointHold(Number(heater.id));
                 } else if (isDoneHoldingSetpoint(activeRun)) {
-                    finishOvenRun(String(heater.id));
-                    startNextOvenRun(String(heater.id));
+                    finishOvenRun(Number(heater.id));
+                    startNextOvenRun(Number(heater.id));
                     // Wait before clearing out previous run's data
-                    setTimeout(() => clearRunData(String(heater.id), activeRun!.uuid), 5000);
+                    setTimeout(() => clearRunData(Number(heater.id), activeRun!.uuid), 5000);
                 }
             }
         });
@@ -200,7 +201,7 @@ class Root extends React.Component<RootProps> {
                 runId: (heater && heater.currentRun) || ''
             };
             this.props.updateHeater(
-                String(heater.id),
+                Number(heater.id),
                 Number(h.kp),
                 Number(h.ki),
                 Number(h.kd),
@@ -208,7 +209,7 @@ class Root extends React.Component<RootProps> {
                 Number(h.actual),
                 Number(h.powerOutputPercent)
             );
-            this.props.addDatum(String(heater.id), datum);
+            this.props.addDatum(Number(heater.id), datum);
         });
     };
 
@@ -224,7 +225,7 @@ class Root extends React.Component<RootProps> {
 
         let unfinishedRuns: UnfinishedRuns = JSON.parse(unfinishedRunsString);
         Object.keys(unfinishedRuns).forEach((heaterId: string) => {
-            this.props.setHeaterBoardRuns(heaterId, unfinishedRuns[heaterId]);
+            this.props.setHeaterBoardRuns(Number(heaterId), unfinishedRuns[heaterId]);
         });
     };
 
@@ -233,18 +234,20 @@ class Root extends React.Component<RootProps> {
         if (!ovenLabelsString) return;
         let ovenLabels: OvenLabels = JSON.parse(ovenLabelsString);
         Object.keys(ovenLabels).forEach((heaterId: string) => {
-            this.props.updateHeaterLabel(heaterId, ovenLabels[heaterId]);
+            this.props.updateHeaterLabel(Number(heaterId), ovenLabels[heaterId]);
         });
     };
 
     render = () => {
-        const { toggleDataCollection, heaters } = this.props;
+        const { toggleDataCollection, heaters, mfcs, epcs } = this.props;
         return (
             <div className={this.props.classes.root}>
                 <SidebarMenu
                     isCollectingData={this.props.isCollectingData}
                     onToggleDataCollection={toggleDataCollection}
                     heaters={heaters}
+                    mfcs={mfcs}
+                    epcs={epcs}
                 />
                 <main>
                     <Route
@@ -252,7 +255,7 @@ class Root extends React.Component<RootProps> {
                         component={HeaterView}
                     />
                     <Route
-                        path={`/components/${ControllerSidebarItem.Analog}/:id`}
+                        path={`/components/${ControllerSidebarItem.Analog}`}
                         component={AnalogView}
                     />
                     <Route
@@ -278,14 +281,14 @@ class Root extends React.Component<RootProps> {
 
 const mapDispatch = (dispatch: Dispatch<RootAction | DataCollectionAction>) => ({
     setHeaterBoards: (heaters: HeaterController[]) => dispatch(setHeaters(heaters)),
-    setHeaterBoardRuns: (id: string, runs: Run[]) => dispatch(setHeaterRuns(id, runs)),
+    setHeaterBoardRuns: (id: number, runs: Run[]) => dispatch(setHeaterRuns(id, runs)),
     setMfcs: (mfcs: MfcController[]) => dispatch(setMfcs(mfcs)),
     setEpcs: (epcs: EpcController[]) => dispatch(setEpcs(epcs)),
     setDioReadings: (readings: boolean[]) => dispatch(setDioReadings(readings)),
     setAnalogReadings: (readings: number[]) => dispatch(setAnalogReadings(readings)),
-    addDatum: (id: string, datum: HeaterDatum) => dispatch(addHeaterDatum(id, datum)),
+    addDatum: (id: number, datum: HeaterDatum) => dispatch(addHeaterDatum(id, datum)),
     updateHeater: (
-        id: string,
+        id: number,
         kp: number,
         ki: number,
         kd: number,
@@ -293,14 +296,14 @@ const mapDispatch = (dispatch: Dispatch<RootAction | DataCollectionAction>) => (
         actual: number,
         powerOutputPercent: number
     ) => dispatch(updateHeaterAttributes(id, { kp, ki, kd, setpoint, actual, powerOutputPercent })),
-    updateHeaterLabel: (id: string, label: string) =>
+    updateHeaterLabel: (id: number, label: string) =>
         dispatch(updateHeaterAttributes(id, { label })),
     toggleDataCollection: () => dispatch(toggleDataCollection()),
-    startOvenEquilibration: (id: string) => dispatch(startEquilibration(id)),
-    startOvenSetpointHold: (id: string) => dispatch(startSetpointHold(id)),
-    finishOvenRun: (id: string) => dispatch(finishCurrentRun(id)),
-    startNextOvenRun: (id: string) => dispatch(startNextRun(id)),
-    clearRunData: (ovenId: string, runId: string) => {
+    startOvenEquilibration: (id: number) => dispatch(startEquilibration(id)),
+    startOvenSetpointHold: (id: number) => dispatch(startSetpointHold(id)),
+    finishOvenRun: (id: number) => dispatch(finishCurrentRun(id)),
+    startNextOvenRun: (id: number) => dispatch(startNextRun(id)),
+    clearRunData: (ovenId: number, runId: string) => {
         /* Clear unlabelled data and finished run data */
         dispatch(clearHeaterData(ovenId, ''));
         dispatch(clearHeaterData(ovenId, runId));
@@ -309,6 +312,8 @@ const mapDispatch = (dispatch: Dispatch<RootAction | DataCollectionAction>) => (
 
 const mapState = (state: RootState) => ({
     heaters: state.heaters,
+    epcs: state.epcs,
+    mfcs: state.mfcs,
     isCollectingData: state.dataCollection.isCollectingData
 });
 

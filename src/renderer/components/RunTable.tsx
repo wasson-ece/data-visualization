@@ -127,7 +127,7 @@ export default React.memo(function RunTable(props: RunTableProps) {
                         <HeaterRunRow
                             run={run}
                             key={`${id}-${index}`}
-                            heaterId={id}
+                            heaterId={Number(id)}
                             runIndex={index}
                         />
                     ))}

@@ -10,7 +10,7 @@ export const mfcs: Reducer<MfcController[], MfcsAction> = (
 ) => {
     switch (action.type) {
         case 'SET_MFCS':
-            return { ...action.mfcs };
+            return [...action.mfcs];
         default:
             return state;
     }

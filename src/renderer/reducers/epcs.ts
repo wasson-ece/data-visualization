@@ -10,7 +10,7 @@ export const epcs: Reducer<EpcController[], EpcsAction> = (
 ) => {
     switch (action.type) {
         case 'SET_EPCS':
-            return { ...action.epcs };
+            return [...action.epcs];
         default:
             return state;
     }

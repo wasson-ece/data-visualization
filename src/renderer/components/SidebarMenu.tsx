@@ -11,11 +11,11 @@ import { ControllerSidebarItem, DetectorSidebarItem } from '../../enums/SidebarI
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import HeaterState from '../../interfaces/HeaterState';
-import { heater } from '../reducers/heater';
+import MfcController from 'node-ti/build/ti-components/mfc-controller';
+import EpcController from 'node-ti/build/ti-components/epc-controller';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -76,12 +76,16 @@ const useStyles = makeStyles((theme: Theme) =>
 interface SidebarMenuProps extends RouteComponentProps {
     isCollectingData: boolean;
     heaters: HeaterState[];
+    mfcs: MfcController[];
+    epcs: EpcController[];
     onToggleDataCollection: () => void;
 }
 
 const arePropsEqual = (props: SidebarMenuProps, nextProps: SidebarMenuProps) =>
     props.isCollectingData === nextProps.isCollectingData &&
     props.heaters.length === nextProps.heaters.length &&
+    props.mfcs.length === nextProps.mfcs.length &&
+    props.epcs.length === nextProps.epcs.length &&
     props.location.pathname === nextProps.location.pathname &&
     !hasHeaterLabelsChanges(props.heaters, nextProps.heaters);
 
@@ -121,7 +125,9 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
         setMainDrawerOpen(!mainDrawerIsOpen);
     }
 
-    const { isCollectingData, onToggleDataCollection, heaters } = props;
+    const { isCollectingData, onToggleDataCollection, heaters, mfcs, epcs } = props;
+
+    console.log(props);
 
     return (
         <div className={classes.root} style={{ width: mainDrawerIsOpen ? 240 : 30 }}>
@@ -160,22 +166,22 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
                             <FormLabel className={classes.menuLabel}>Controllers</FormLabel>
                         </div>
                         <List>
-                            <ListItem button>
-                                <Link
-                                    to={`/components/${ControllerSidebarItem.Analog}`}
-                                    style={{ textDecoration: 'none', color: 'inherit' }}
-                                >
+                            <Link
+                                to={`/components/${ControllerSidebarItem.Analog}`}
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                            >
+                                <ListItem button>
                                     <ListItemText primary="Analog" />
-                                </Link>
-                            </ListItem>
-                            <ListItem button onClick={handleClickDioDrawer}>
-                                <Link
-                                    to={`/controllers/${ControllerSidebarItem['Digital I/O (DIO)']}`}
-                                    style={{ textDecoration: 'none', color: 'inherit' }}
-                                >
+                                </ListItem>
+                            </Link>
+                            <Link
+                                to={`/controllers/${ControllerSidebarItem['Digital I/O (DIO)']}`}
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                            >
+                                <ListItem button onClick={handleClickDioDrawer}>
                                     <ListItemText primary="Digital I/O (DIO)" />
-                                </Link>
-                            </ListItem>
+                                </ListItem>
+                            </Link>
                             <Collapse in={dioDrawerIsOpen} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding></List>
                             </Collapse>
@@ -184,7 +190,26 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
                                 {epcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={epcDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding></List>
+                                <List component="div" disablePadding>
+                                    {epcs.map(epc => (
+                                        <Link
+                                            to={`/controllers/${ControllerSidebarItem['Mass Flow (MFC)']}/${epc.id}`}
+                                            style={{ textDecoration: 'none', color: 'inherit' }}
+                                            key={epc.id}
+                                        >
+                                            <ListItem
+                                                button
+                                                className={classes.nested}
+                                                selected={
+                                                    `/controllers/${ControllerSidebarItem.Oven}/${epc.id}` ===
+                                                    props.location.pathname
+                                                }
+                                            >
+                                                <ListItemText primary={`EPC #${epc.id}`} />
+                                            </ListItem>
+                                        </Link>
+                                    ))}
+                                </List>
                             </Collapse>
                             <ListItem button onClick={handleClickHeaterDrawer}>
                                 <ListItemText primary="Heaters" />
@@ -220,7 +245,26 @@ const SidebarMenu = React.memo(function(props: SidebarMenuProps) {
                                 {mfcDrawerIsOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
                             <Collapse in={mfcDrawerIsOpen} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding></List>
+                                <List component="div" disablePadding>
+                                    {mfcs.map(mfc => (
+                                        <Link
+                                            to={`/controllers/${ControllerSidebarItem['Mass Flow (MFC)']}/${mfc.id}`}
+                                            style={{ textDecoration: 'none', color: 'inherit' }}
+                                            key={mfc.id}
+                                        >
+                                            <ListItem
+                                                button
+                                                className={classes.nested}
+                                                selected={
+                                                    `/controllers/${ControllerSidebarItem.Oven}/${mfc.id}` ===
+                                                    props.location.pathname
+                                                }
+                                            >
+                                                <ListItemText primary={`MFC #${mfc.id}`} />
+                                            </ListItem>
+                                        </Link>
+                                    ))}
+                                </List>
                             </Collapse>
                         </List>
                         <Divider />

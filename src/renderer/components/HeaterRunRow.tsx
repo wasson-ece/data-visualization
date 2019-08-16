@@ -34,10 +34,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface RunRowProps {
     run: Run;
-    heaterId: string;
+    heaterId: number;
     runIndex: number;
-    deleteHeaterRunRow: (heaterId: string, index: number) => void;
-    editHeaterRunRow: (heaterId: string, index: number, attribute: string, value: string) => void;
+    deleteHeaterRunRow: (heaterId: number, index: number) => void;
+    editHeaterRunRow: (heaterId: number, index: number, attribute: string, value: string) => void;
 }
 
 const areHeaterRunPropsEqual = (props: RunRowProps, nextProps: RunRowProps) =>
@@ -50,27 +50,27 @@ const HeaterRunRow = React.memo(function HeaterRunRow(props: RunRowProps) {
     const { run, heaterId, runIndex, deleteHeaterRunRow, editHeaterRunRow } = props;
 
     const handleChangeKpValue = (e: React.ChangeEvent<HTMLInputElement>) =>
-        editHeaterRunRow(heaterId, runIndex, 'kp', e.target.value);
+        editHeaterRunRow(Number(heaterId), runIndex, 'kp', e.target.value);
 
     const handleChangeKiValue = (e: React.ChangeEvent<HTMLInputElement>) =>
-        editHeaterRunRow(heaterId, runIndex, 'ki', e.target.value);
+        editHeaterRunRow(Number(heaterId), runIndex, 'ki', e.target.value);
 
     const handleChangeKdValue = (e: React.ChangeEvent<HTMLInputElement>) =>
-        editHeaterRunRow(heaterId, runIndex, 'kd', e.target.value);
+        editHeaterRunRow(Number(heaterId), runIndex, 'kd', e.target.value);
 
     const handleChangeBaselineValue = (e: React.ChangeEvent<HTMLInputElement>) =>
-        editHeaterRunRow(heaterId, runIndex, 'baseline', e.target.value);
+        editHeaterRunRow(Number(heaterId), runIndex, 'baseline', e.target.value);
 
     const handleChangeSetpointValue = (e: React.ChangeEvent<HTMLInputElement>) =>
-        editHeaterRunRow(heaterId, runIndex, 'setpoint', e.target.value);
+        editHeaterRunRow(Number(heaterId), runIndex, 'setpoint', e.target.value);
 
     const handleChangeEquilibrationValue = (e: React.ChangeEvent<HTMLInputElement>) =>
-        editHeaterRunRow(heaterId, runIndex, 'equilibrationTime', e.target.value);
+        editHeaterRunRow(Number(heaterId), runIndex, 'equilibrationTime', e.target.value);
 
     const handleChangeHoldTimeValue = (e: React.ChangeEvent<HTMLInputElement>) =>
-        editHeaterRunRow(heaterId, runIndex, 'setpointHoldTime', e.target.value);
+        editHeaterRunRow(Number(heaterId), runIndex, 'setpointHoldTime', e.target.value);
 
-    const handleDeleteRow = () => deleteHeaterRunRow(heaterId, runIndex);
+    const handleDeleteRow = () => deleteHeaterRunRow(Number(heaterId), runIndex);
 
     let className = undefined;
     if (run.isRunning) className = classes.running;
@@ -270,8 +270,8 @@ const RunStatusTag = (props: RunStatusProps) => {
 };
 
 const mapDispatch = (dispatch: Dispatch) => ({
-    deleteHeaterRunRow: (heaterId: string, index: number) => dispatch(deleteRun(heaterId, index)),
-    editHeaterRunRow: (heaterId: string, index: number, attribute: string, value: string) =>
+    deleteHeaterRunRow: (heaterId: number, index: number) => dispatch(deleteRun(heaterId, index)),
+    editHeaterRunRow: (heaterId: number, index: number, attribute: string, value: string) =>
         dispatch(editRunAttributes(heaterId, index, { [attribute]: value }))
 });
 

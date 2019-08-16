@@ -24,7 +24,7 @@ const defaultHeaterState: HeaterState = {
 export const heater: Reducer<HeaterState, HeaterAction> = (
     state = defaultHeaterState,
     action: HeaterAction
-) => {
+): HeaterState => {
     if (action.id !== state.id) return state;
     switch (action.type) {
         case 'ADD_HEATER_DATUM':
